@@ -1,0 +1,25 @@
+{
+    "name": "picks",
+    "version": "1.0.0",
+    "description": "",
+    "author": "",
+    "license": "ISC",
+    "prettier": {
+        "tabWidth": 4,
+        "singleQuote": true
+    },
+    "workspaces": [
+        "api",
+        "functions/*",
+        "libs/*",
+        "web"
+    ],
+    "devDependencies": {
+        "typescript": "^5.1.6"
+    },
+    "scripts": {
+        "build": "npm run build --workspaces",
+        "proxy": "caddy run",
+        "typecheck": "npm run typecheck --workspaces"
+    }
+}

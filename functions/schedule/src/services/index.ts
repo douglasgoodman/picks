@@ -1,0 +1,1 @@
+export { putSeasonDocument } from './storageService';
