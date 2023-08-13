@@ -48,7 +48,6 @@ export const authCompleteHandler: RequestHandler = async (req, res) => {
         firstName: userInfo.given_name!,
         lastName: userInfo.family_name!,
         fullName: userInfo.name!,
-        gender: userInfo.gender!,
     };
 
     if (userInfo.picture) {

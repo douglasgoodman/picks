@@ -1,6 +1,6 @@
-import { serve, ServeOnRequestArgs } from 'esbuild';
+import { context, ServeOnRequestArgs } from 'esbuild';
 import process from 'node:process';
-import { baseBuildOptions } from './shared';
+import { baseBuildOptions, copyPublicAssets } from './shared';
 import http from 'node:http';
 import path from 'node:path';
 import * as dotenv from 'dotenv';
@@ -29,15 +29,22 @@ const logRequest = ({
 }: ServeOnRequestArgs) =>
     console.log(`${method} ${remoteAddress} ${path} ${status}`);
 
-serve(
-    { host: 'localhost', servedir: 'public', onRequest: logRequest },
-    {
-        ...baseBuildOptions,
-        outfile: 'public/bundle.js',
-    }
-)
+context({
+    ...baseBuildOptions,
+    outfile: 'dist/bundle.js',
+})
+    .then((c) => {
+        c.watch();
+        return c.serve({
+            host: 'localhost',
+            onRequest: logRequest,
+            servedir: 'dist',
+        });
+    })
     .then(({ host, port }) => {
         console.log(`Running at https://www.${process.env.DOMAIN}`);
+
+        copyPublicAssets();
 
         http.createServer((req, res) => {
             let rewrite = true;
@@ -77,4 +84,7 @@ serve(
             req.pipe(proxyReq, { end: true });
         }).listen(3000);
     })
-    .catch(() => process.exit(1));
+    .catch((e) => {
+        console.log(e);
+        process.exit(1);
+    });

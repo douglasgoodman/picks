@@ -1,0 +1,26 @@
+api.sendpicks-local.football {
+    tls ./openssl/server.crt ./openssl/server.key
+
+    reverse_proxy localhost:3001 {
+            header_up Host {host}
+            header_up Origin {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-Server {host}
+            header_up X-Forwarded-Port {port}
+            header_down Access-Control-Allow-Origin https://www.sendpicks-local.football
+            header_down Access-Control-Allow-Credentials true
+            header_down Access-Control-Allow-Headers content-type
+    }
+}
+
+www.sendpicks-local.football {
+    tls ./openssl/server.crt ./openssl/server.key
+
+    reverse_proxy localhost:3000 {
+            header_up Host "localhost"
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-Host "localhost"
+            header_up X-Forwarded-Server "localhost"
+            header_up X-Forwarded-Port {port}
+    }
+}

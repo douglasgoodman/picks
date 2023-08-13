@@ -1,4 +1,4 @@
-# Show me your picks! 🏈
+# Show me your Picks! 🏈
 
 ## Prerequisites
 
