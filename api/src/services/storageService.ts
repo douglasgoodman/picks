@@ -1,89 +1,63 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { SeasonDocument, UserDocument } from '@picks/types';
 import { config } from '../config';
+import { Filter, MongoClient } from 'mongodb';
+
+const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING!);
 
 export async function getSeasonDocument(): Promise<SeasonDocument> {
-    const dynamo = new DynamoDBClient({ region: config.aws.region });
-    const documentClient = DynamoDBDocument.from(dynamo, {
-        marshallOptions: { removeUndefinedValues: true },
-    });
     try {
-        const response = await documentClient.get({
-            TableName: 'pickem-seasons',
-            Key: {
-                year: '2022',
-            },
-        });
-        console.log(
-            `Get season document successful: ${JSON.stringify(response)}`
-        );
-        return response.Item as SeasonDocument;
+        await client.connect();
+        const result = await client
+            .db('globaldata')
+            .collection<SeasonDocument>('seasons')
+            .findOne({ year: 2023 });
+        console.log('result:', JSON.stringify(result));
+        return result as SeasonDocument;
     } catch (error) {
         console.error(
-            `Error getting season document from dynamodb: ${JSON.stringify(
+            `Error getting season document from MongoDB: ${JSON.stringify(
                 error
             )}`
         );
         throw error;
-    } finally {
-        documentClient.destroy();
-        dynamo.destroy();
     }
 }
 
 export async function getUserDocument(id: string): Promise<UserDocument> {
-    const dynamo = new DynamoDBClient({ region: config.aws.region });
-    const documentClient = DynamoDBDocument.from(dynamo, {
-        marshallOptions: { removeUndefinedValues: true },
-    });
     try {
-        const response = await documentClient.get({
-            TableName: 'pickem-users',
-            Key: {
-                id,
-            },
-        });
-        console.log('Get user document successful');
-        return response.Item?.user as UserDocument;
+        await client.connect();
+        const result = await client
+            .db('globaldata')
+            .collection<UserDocument>('users')
+            .findOne({ _id: id });
+        console.log('result:', JSON.stringify(result));
+        return result as UserDocument;
     } catch (error) {
         console.error(
-            `Error getting user document from dynamodb: ${JSON.stringify(
-                error
-            )}`
+            `Error getting user document from MongoDB: ${JSON.stringify(error)}`
         );
         throw error;
-    } finally {
-        documentClient.destroy();
-        dynamo.destroy();
     }
 }
 
 export async function putUserDocument(
     userDocument: UserDocument
 ): Promise<void> {
-    const dynamo = new DynamoDBClient({ region: config.aws.region });
-    const documentClient = DynamoDBDocument.from(dynamo, {
-        marshallOptions: { removeUndefinedValues: true },
-    });
     try {
-        const response = await documentClient.put({
-            TableName: 'pickem-users',
-            Item: {
-                id: userDocument.id,
-                user: userDocument,
-            },
-        });
-        console.log(
-            `Put user document successful: ${JSON.stringify(response)}`
-        );
+        await client.connect();
+        const result = await client
+            .db('globaldata')
+            .collection<UserDocument>('users')
+            .updateOne(
+                { _id: userDocument._id! },
+                { $set: userDocument },
+                { upsert: true }
+            );
+        console.log('result:', JSON.stringify(result));
     } catch (error) {
         console.error(
-            `Error updating user in dynamodb: ${JSON.stringify(error)}`
+            `Error updating user in MongoDB: ${JSON.stringify(error)}`
         );
         throw error;
-    } finally {
-        documentClient.destroy();
-        dynamo.destroy();
     }
 }

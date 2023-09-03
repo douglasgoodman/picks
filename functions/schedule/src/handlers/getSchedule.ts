@@ -8,6 +8,8 @@ import {
     Week,
 } from '@picks/types';
 
+export let callCount = 0;
+
 enum CalendarType {
     Preseason = '1',
     RegularSeason = '2',
@@ -83,6 +85,7 @@ interface RawOdds {
 
 export async function getScheduleAsSeasonDocument(): Promise<SeasonDocument> {
     const { data: scoreboard } = await Axios.get<Scoreboard>(scoreboardUrl);
+    callCount++;
 
     const preseasonWeeks = await convertCalendarToWeeks(
         scoreboard.leagues[0].calendar.find(
@@ -101,7 +104,7 @@ export async function getScheduleAsSeasonDocument(): Promise<SeasonDocument> {
     );
 
     const season: SeasonDocument = {
-        isCurrent: true,
+        is_current: true,
         year: scoreboard.season.year,
         weeks: [...preseasonWeeks, ...regularSeasonWeeks, ...postseasonWeeks],
     };
@@ -115,12 +118,11 @@ async function convertCalendarToWeeks(calendar: Calendar): Promise<Week[]> {
         const { data: weekScoreboard } = await Axios.get<Scoreboard>(
             `${scoreboardUrl}?seasontype=${calendar.value}&week=${week.value}`
         );
+        callCount++;
 
         const now = new Date();
         const getOdds =
-            now > new Date(week.startDate) &&
-            now < new Date(week.endDate) &&
-            now.getDay() === 3;
+            now > new Date(week.startDate) && now < new Date(week.endDate);
         if (getOdds) {
             console.log("It's Wednesday, my dudes! Updating odds...");
         }
@@ -138,38 +140,43 @@ async function convertCalendarToWeeks(calendar: Calendar): Promise<Week[]> {
             let odds: Odds | undefined;
             if (getOdds) {
                 const url = getOddsUrl(event.id);
-                const { data: rawOdds } = await Axios.get<RawOdds>(url);
-                odds = {
-                    details: rawOdds.details,
-                    overUnder: rawOdds.overUnder,
-                    homeSpread: rawOdds.homeTeamOdds.favorite
-                        ? rawOdds.spread
-                        : rawOdds.spread * -1,
-                    awaySpread: rawOdds.awayTeamOdds.favorite
-                        ? rawOdds.spread
-                        : rawOdds.spread * -1,
-                };
+                try {
+                    const { data: rawOdds } = await Axios.get<RawOdds>(url);
+                    callCount++;
+                    odds = {
+                        details: rawOdds.details,
+                        over_under: rawOdds.overUnder,
+                        away_spread: rawOdds.awayTeamOdds.favorite
+                            ? rawOdds.spread
+                            : rawOdds.spread * -1,
+                        home_spread: rawOdds.homeTeamOdds.favorite
+                            ? rawOdds.spread
+                            : rawOdds.spread * -1,
+                    };
+                } catch (e) {
+                    console.log('error getting odds for', event.id);
+                }
             }
 
             games.push({
                 id: event.id,
-                dateTime: event.date,
+                date_time: new Date(event.date),
                 status: convertEventStatusToGameStatus(
                     event.competitions[0].status
                 ),
-                home: convertCompetitorToTeam(homeCompetitor),
                 away: convertCompetitorToTeam(awayCompetitor),
-                homeScore: +homeCompetitor.score,
-                awayScore: +awayCompetitor.score,
+                home: convertCompetitorToTeam(homeCompetitor),
+                away_score: +awayCompetitor.score,
+                home_score: +homeCompetitor.score,
                 odds,
             });
         }
 
         weeks.push({
             number: week.value,
-            isPreseason: calendar.value === CalendarType.Preseason,
-            isRegularSeason: calendar.value === CalendarType.RegularSeason,
-            isPostseason: calendar.value === CalendarType.Postseason,
+            is_preseason: calendar.value === CalendarType.Preseason,
+            is_regular_season: calendar.value === CalendarType.RegularSeason,
+            is_postseason: calendar.value === CalendarType.Postseason,
             games,
         });
     }
@@ -193,6 +200,6 @@ function convertCompetitorToTeam(competitor: Competitor): Team {
     return {
         name: competitor.team.displayName,
         abbreviation: competitor.team.abbreviation,
-        imageUrl: competitor.team.logo,
+        image_url: competitor.team.logo,
     };
 }

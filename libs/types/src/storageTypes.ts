@@ -1,14 +1,17 @@
+import { ObjectId } from 'mongodb';
+
 export interface SeasonDocument {
-    isCurrent: boolean;
+    _id?: ObjectId;
     year: number;
+    is_current: boolean;
     weeks: Week[];
 }
 
 export interface Week {
     number: string;
-    isPreseason: boolean;
-    isRegularSeason: boolean;
-    isPostseason: boolean;
+    is_preseason: boolean;
+    is_regular_season: boolean;
+    is_postseason: boolean;
     games: Game[];
 }
 
@@ -16,33 +19,33 @@ export type GameStatus = 'future' | 'inProgress' | 'complete';
 
 export interface Game {
     id: string;
-    dateTime: string; // "2022-08-01T07:00Z"
+    date_time: Date;
     status: GameStatus;
     home: Team;
     away: Team;
-    homeScore?: number;
-    awayScore?: number;
+    home_score?: number;
+    away_score?: number;
     odds?: Odds;
 }
 
 export interface Team {
     name: string;
     abbreviation: string;
-    imageUrl: string;
+    image_url: string;
 }
 
 export interface Odds {
     details: string;
-    homeSpread: number;
-    awaySpread: number;
-    overUnder: number;
+    home_spread: number;
+    away_spread: number;
+    over_under: number;
 }
 
 export interface UserDocument {
-    id: string;
+    _id: string;
     email: string;
-    firstName: string;
-    lastName: string;
-    fullName: string;
-    userImageUrl?: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    user_image_url?: string;
 }
