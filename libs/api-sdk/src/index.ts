@@ -1,3 +1,3 @@
-export * from './auth';
-export * from './league';
-export * from './user';
+export * from './auth.js';
+export * from './league.js';
+export * from './user.js';

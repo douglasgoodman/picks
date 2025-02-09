@@ -1,43 +1,47 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { FlexFill } from '../components/FlexFill';
+//import { FlexFill } from '../components/FlexFill';
 import Container from '@mui/material/Container';
-import { useAuthContext } from '../context/AuthContext';
-import { create } from 'domain';
 import Typography from '@mui/material/Typography';
 import { useTitle } from '../hooks/useTitle';
+import { useParams } from '@tanstack/react-router';
+import { useAsync } from 'react-async-hook';
+import { api } from '../api/api';
 
-export interface LeagueProps {
-    join?: boolean;
-    create?: boolean;
-}
-
-export const League: React.FC<LeagueProps> = ({ join, create }) => {
-    const { id } = useParams<'id'>();
+export const League: React.FC = () => {
     useTitle('League stuff');
+    const leagueId = useParams({
+        from: '/league_/$leagueId',
+        select: (params) => params.leagueId,
+    });
 
-    if (create) {
-        return (
-            <Container sx={{ padding: '2rem' }}>
-                <FlexFill
-                    sx={{ flexDirection: 'column', alignItems: 'center' }}
-                >
-                    <Typography variant="h5">
-                        Let's create a new league!
-                    </Typography>
-                    <Typography></Typography>
-                </FlexFill>
-            </Container>
-        );
+    const getLeagueCallback = useAsync(api.league.get, [leagueId]);
+
+    if (getLeagueCallback.loading) {
+        return <Container>Loading...</Container>;
     }
-    if (join) {
+
+    if (getLeagueCallback.error) {
+        return <Container>Error: {getLeagueCallback.error.message}</Container>;
     }
-    if (join && !!id) {
-        return <Container></Container>;
+
+    const league = getLeagueCallback.result?.leagues[0];
+    if (!league) {
+        return <Container>League not found</Container>;
     }
     return (
         <Container>
-            <Typography variant="h5">League stuff!</Typography>
+            <Typography variant="h5">{league.name}</Typography>
+            <ul>
+                <li>ID: {league.id}</li>
+                <li>Max number of players: {league.maxPlayers}</li>
+                <li>
+                    Members:{' '}
+                    <ul>
+                        {league.members.map((member) => (
+                            <li>{member.fullName}</li>
+                        ))}
+                    </ul>
+                </li>
+            </ul>
         </Container>
     );
 };

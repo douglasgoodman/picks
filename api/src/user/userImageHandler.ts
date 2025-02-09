@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { getUserImage } from '../services/s3Service';
+import { getUserImage } from '../services/s3Service.js';
 
 export const userImageHandler: RequestHandler = async (req, res) => {
     console.log(JSON.stringify(req.session));

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { randomBytes } from 'node:crypto';
-import { config } from '../config';
-import { googleOAuth } from './googleOAuth';
+import { config } from '../config.js';
+import { googleOAuth } from './googleOAuth.js';
 import { AuthRoute, AuthStartResponse } from '@picks/api-sdk';
 
 const authRedirectUrl = `https://${config.apiDomain}${AuthRoute.redirect}`;
@@ -19,7 +19,7 @@ export const authStartHandler: RequestHandler = (req, res) => {
     const authStartUrl = googleOAuth.generateAuthUrl(
         oauthClient,
         nonce,
-        loginHint
+        loginHint,
     );
     req.session.auth = { nonce, authStartUrl, path };
     const responseBody: AuthStartResponse = { url: authRedirectUrl };

@@ -1,8 +1,6 @@
-import React from 'react';
-import { Router } from './routes/Router';
 import { Header } from './components/Header';
-import { AuthContextProvider } from './context/AuthContextProvider';
 import {
+    Container,
     createTheme,
     CssBaseline,
     PaletteMode,
@@ -10,26 +8,28 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { LoadingOverlay } from './components/LoadingOverlay';
+//import { LoadingOverlay } from './components/LoadingOverlay';
+import { type PropsWithChildren, StrictMode, useMemo, useState } from 'react';
+import { AuthContextProvider } from './context/AuthContextProvider';
 
-export const App: React.FC = () => {
+export const App: React.FC<PropsWithChildren> = ({ children }) => {
     const localStorage = useLocalStorage();
     const preferDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-    const [paletteMode, setPaletteMode] = React.useState<PaletteMode>(() => {
+    const [paletteMode, setPaletteMode] = useState<PaletteMode>(() => {
         const mode = localStorage.get<string>('paletteMode') as PaletteMode;
-        if (!!mode) {
+        if (mode) {
             return mode;
         } else {
             return preferDarkMode ? 'dark' : 'light';
         }
     });
 
-    const theme = React.useMemo(
+    const theme = useMemo(
         () =>
             createTheme({
                 palette: { mode: paletteMode },
             }),
-        [paletteMode]
+        [paletteMode],
     );
 
     const togglePaletteMode = () => {
@@ -39,19 +39,18 @@ export const App: React.FC = () => {
     };
 
     return (
-        <React.StrictMode>
+        <StrictMode>
             <ThemeProvider theme={theme}>
                 <CssBaseline enableColorScheme>
                     <AuthContextProvider>
-                        <Router>
-                            <Header
-                                paletteMode={paletteMode}
-                                togglePaletteMode={togglePaletteMode}
-                            />
-                        </Router>
+                        <Header
+                            paletteMode={paletteMode}
+                            togglePaletteMode={togglePaletteMode}
+                        />
+                        <Container>{children}</Container>
                     </AuthContextProvider>
                 </CssBaseline>
             </ThemeProvider>
-        </React.StrictMode>
+        </StrictMode>
     );
 };

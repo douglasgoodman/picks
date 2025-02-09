@@ -1,32 +1,29 @@
-import React from 'react';
+import { useState, type PropsWithChildren } from 'react';
 import axios from 'axios';
 import { AuthContext, AuthContextType } from './AuthContext';
-import { HasChildren } from '../types';
 import { environment } from '../environment';
 import { useAsync, useAsyncCallback } from 'react-async-hook';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import {
     AuthFetchResponse,
-    AuthRoute,
     AuthStartResponse,
+    AuthRoute,
 } from '@picks/api-sdk';
-
-export type AuthContextProviderProps = HasChildren;
 
 const axiosInstance = axios.create({
     withCredentials: true,
     baseURL: environment.apiDomain,
 });
 
-export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
+export const AuthContextProvider: React.FC<PropsWithChildren> = ({
     children,
 }) => {
     const localStorage = useLocalStorage();
-    const [user, setUser] = React.useState<AuthFetchResponse>();
+    const [user, setUser] = useState<AuthFetchResponse>();
 
     const { loading: fetchInProgress } = useAsync(async () => {
         const response = await axiosInstance.get<AuthFetchResponse>(
-            AuthRoute.fetch
+            AuthRoute.fetch,
         );
         const userResponse = response.data;
         localStorage.set<string>('signInHint', userResponse.email);
@@ -40,17 +37,17 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
                 AuthRoute.start,
                 {
                     params: { path, hint },
-                }
+                },
             );
             location.href = response.data.url;
-        }
+        },
     );
 
     const { loading: signOutInProgress, execute: signOut } = useAsyncCallback(
         async () => {
             await axiosInstance.get(AuthRoute.signOut);
             location.href = '/';
-        }
+        },
     );
 
     const inProgress = fetchInProgress || signInInProgress || signOutInProgress;

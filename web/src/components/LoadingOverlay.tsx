@@ -1,10 +1,9 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import React from 'react';
-import { HasChildren } from '../types';
+import { type PropsWithChildren } from 'react';
 import { FlexFill } from './FlexFill';
 
-export type LoadingOverlayProps = HasChildren & {
+export type LoadingOverlayProps = PropsWithChildren & {
     isLoading: boolean;
     content?: string;
 };

@@ -1,9 +1,8 @@
 import { SxProps, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
-import React from 'react';
-import { HasChildren } from '../types';
+import { type PropsWithChildren } from 'react';
 
-export type FlexFillProps = HasChildren & {
+export type FlexFillProps = PropsWithChildren & {
     sx?: SxProps<Theme>;
 };
 

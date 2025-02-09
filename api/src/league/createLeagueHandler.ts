@@ -1,4 +1,4 @@
-import { LeagueCreateResponse } from '@picks/api-sdk';
+import { LeagueCreateResponse, LeagueCreateRequest } from '@picks/api-sdk';
 import { RequestHandler } from 'express';
 import {
     uniqueNamesGenerator,
@@ -8,6 +8,7 @@ import {
     colors,
     animals,
 } from 'unique-names-generator';
+import { putLeagueDocument } from '../services/storage/league.js';
 
 const nameGeneratorConfig: Config = {
     dictionaries: [names, ['the'], adjectives, colors, animals],
@@ -15,14 +16,26 @@ const nameGeneratorConfig: Config = {
     length: 5,
 };
 
-export const createLeagueHandler: RequestHandler = async (req, res) => {
+export const createLeagueHandler: RequestHandler<
+    unknown,
+    LeagueCreateResponse,
+    LeagueCreateRequest,
+    unknown
+> = async (req, res) => {
     if (!req.session?.user?.id) {
-        res.status(401).send('Unauthorized');
+        res.sendStatus(401);
         return;
     }
 
     const name = uniqueNamesGenerator(nameGeneratorConfig).toLowerCase();
     console.log(name);
+    putLeagueDocument({
+        _id: name,
+        creator_id: req.session.user.id,
+        name: req.body.name,
+        max_players: req.body.maxPlayers,
+        member_ids: [req.session.user.id],
+    });
     const createResponse: LeagueCreateResponse = { id: name };
     res.status(200).send(createResponse);
 };

@@ -1,10 +1,10 @@
 import { UserDocument } from '@picks/types';
 import { RequestHandler } from 'express';
 import { google } from 'googleapis';
-import { config } from '../config';
-import { uploadUserImage } from '../services/s3Service';
-import { putUserDocument } from '../services/storageService';
-import { googleOAuth } from './googleOAuth';
+import { config } from '../config.js';
+import { uploadUserImage } from '../services/s3Service.js';
+import { googleOAuth } from './googleOAuth.js';
+import { putUserDocument } from '../services/storage/user.js';
 
 export const authCompleteHandler: RequestHandler = async (req, res) => {
     const error = req.query.error;
@@ -43,17 +43,17 @@ export const authCompleteHandler: RequestHandler = async (req, res) => {
     });
 
     const userDocument: UserDocument = {
-        id: userInfo.id!,
+        _id: userInfo.id!,
         email: userInfo.email!,
-        firstName: userInfo.given_name!,
-        lastName: userInfo.family_name!,
-        fullName: userInfo.name!,
+        first_name: userInfo.given_name!,
+        last_name: userInfo.family_name!,
+        full_name: userInfo.name!,
     };
 
     if (userInfo.picture) {
-        const url = await uploadUserImage(userDocument.id, userInfo.picture);
+        const url = await uploadUserImage(userDocument._id, userInfo.picture);
         if (!!url) {
-            userDocument.userImageUrl = url;
+            userDocument.user_image_url = url;
         }
     }
 

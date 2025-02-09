@@ -1,5 +1,5 @@
+import { createContext, useContext } from 'react';
 import { AuthFetchResponse } from '@picks/api-sdk';
-import React from 'react';
 
 export type AuthenticatedUser = AuthFetchResponse;
 
@@ -14,7 +14,7 @@ const notMountedFunction = () => {
     throw new Error();
 };
 
-export const AuthContext = React.createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
     user: undefined,
     inProgress: undefined,
     signIn: notMountedFunction,
@@ -22,5 +22,5 @@ export const AuthContext = React.createContext<AuthContextType>({
 });
 
 export function useAuthContext(): AuthContextType {
-    return React.useContext(AuthContext);
+    return useContext(AuthContext);
 }

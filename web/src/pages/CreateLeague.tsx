@@ -1,5 +1,3 @@
-import React from 'react';
-import { FlexFill } from '../components/FlexFill';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { LoadingOverlay } from '../components/LoadingOverlay';
@@ -11,8 +9,6 @@ import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { useAsyncCallback } from 'react-async-hook';
-import LoadingButton from '@mui/lab/LoadingButton';
-import axios from 'axios';
 import { environment } from '../environment';
 import Alert from '@mui/material/Alert';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -24,48 +20,29 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import { toCanvas } from 'qrcode';
 import Box from '@mui/material/Box';
-import { LeagueRoute } from '@picks/api-sdk';
 import { useTitle } from '../hooks/useTitle';
-
-export interface LeagueProps {
-    join?: boolean;
-    create?: boolean;
-}
+import Button from '@mui/material/Button';
+import { useEffect, useRef, useState } from 'react';
+import { api } from '../api/api';
 
 const maxPlayerPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const axiosInstance = axios.create({
-    withCredentials: true,
-    baseURL: environment.apiDomain,
-});
 
 export const CreateLeague: React.FC = () => {
     useTitle('Create a league');
     const { user, inProgress: authInProgress } = useAuthContext();
-    const [leagueName, setLeagueName] = React.useState<string | undefined>(
-        undefined
-    );
-    const [maxPlayers, setMaxPlayers] = React.useState<number>(5);
-    const [leagueUrl, setLeagueUrl] = React.useState<string | undefined>(
-        undefined
-    );
-    const [copied, setCopied] = React.useState(false);
-    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const [leagueName, setLeagueName] = useState<string>();
+    const [maxPlayers, setMaxPlayers] = useState<number>(4);
+    const [leagueUrl, setLeagueUrl] = useState<string>();
+    const [copied, setCopied] = useState(false);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const {
-        loading,
-        execute: createLeague,
-        error,
-    } = useAsyncCallback(async () => {
-        const response = await axiosInstance.post(LeagueRoute.create, {
-            leagueName,
-            maxPlayers,
-        });
-        setLeagueUrl(
-            `${environment.webDomain}${LeagueRoute.join}/${response.data.id}`
-        );
+    const createLeagueCallback = useAsyncCallback(api.league.create, {
+        onSuccess: (response) => {
+            setLeagueUrl(`${environment.webDomain}/league/${response.id}/join`);
+        },
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!(canvasRef.current && leagueUrl)) {
             return;
         }
@@ -73,7 +50,7 @@ export const CreateLeague: React.FC = () => {
     }, [canvasRef, leagueUrl]);
 
     const handleCreateButtonClick = async () => {
-        await createLeague();
+        await createLeagueCallback.execute(leagueName!, maxPlayers);
     };
 
     const handleCopyToClipboard = () => {
@@ -84,7 +61,7 @@ export const CreateLeague: React.FC = () => {
         setCopied(true);
     };
 
-    if (!!leagueUrl) {
+    if (leagueUrl) {
         return (
             <Container sx={{ padding: '2rem' }}>
                 <Container component="form" maxWidth="sm">
@@ -138,7 +115,7 @@ export const CreateLeague: React.FC = () => {
     return (
         <Container sx={{ padding: '2rem' }}>
             <LoadingOverlay isLoading={!!authInProgress}>
-                {!!user ? (
+                {user ? (
                     <Container component="form" maxWidth="sm">
                         <Stack spacing={2}>
                             <Typography variant="h5">
@@ -155,7 +132,7 @@ export const CreateLeague: React.FC = () => {
                                 error={leagueName === ''}
                                 label="League name"
                                 helperText="Required"
-                                disabled={loading}
+                                disabled={createLeagueCallback.loading}
                                 required
                             />
                             <FormControl variant="filled" required>
@@ -163,7 +140,7 @@ export const CreateLeague: React.FC = () => {
                                     Max number of players
                                 </InputLabel>
                                 <Select<number>
-                                    disabled={loading}
+                                    disabled={createLeagueCallback.loading}
                                     labelId="max-players-label"
                                     id="max-players"
                                     value={maxPlayers}
@@ -179,15 +156,15 @@ export const CreateLeague: React.FC = () => {
                                 </Select>
                                 <FormHelperText>Required</FormHelperText>
                             </FormControl>
-                            <LoadingButton
-                                loading={loading}
+                            <Button
+                                loading={createLeagueCallback.loading}
                                 variant="contained"
                                 disabled={!leagueName}
                                 onClick={handleCreateButtonClick}
                             >
                                 Create
-                            </LoadingButton>
-                            {!!error && (
+                            </Button>
+                            {createLeagueCallback.error && (
                                 <Alert severity="error">
                                     We were unable to create a league!
                                 </Alert>
@@ -197,7 +174,6 @@ export const CreateLeague: React.FC = () => {
                 ) : (
                     <Typography>Sign in first</Typography>
                 )}
-                <Typography></Typography>
             </LoadingOverlay>
         </Container>
     );

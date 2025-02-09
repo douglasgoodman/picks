@@ -1,4 +1,3 @@
-import React from 'react';
 import { FlexFill } from '../components/FlexFill';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
