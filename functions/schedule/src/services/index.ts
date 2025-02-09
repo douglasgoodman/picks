@@ -1,1 +1,1 @@
-export { putSeasonDocument } from './mongoDbStorageService';
+export { putSeasonDocument } from './storageService';

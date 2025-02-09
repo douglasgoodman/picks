@@ -43,17 +43,17 @@ export const authCompleteHandler: RequestHandler = async (req, res) => {
     });
 
     const userDocument: UserDocument = {
-        _id: userInfo.id!,
+        id: userInfo.id!,
         email: userInfo.email!,
-        first_name: userInfo.given_name!,
-        last_name: userInfo.family_name!,
-        full_name: userInfo.name!,
+        firstName: userInfo.given_name!,
+        lastName: userInfo.family_name!,
+        fullName: userInfo.name!,
     };
 
     if (userInfo.picture) {
-        const url = await uploadUserImage(userDocument._id, userInfo.picture);
+        const url = await uploadUserImage(userDocument.id, userInfo.picture);
         if (!!url) {
-            userDocument.user_image_url = url;
+            userDocument.userImageUrl = url;
         }
     }
 
