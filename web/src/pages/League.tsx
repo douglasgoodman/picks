@@ -5,15 +5,18 @@ import { useTitle } from '../hooks/useTitle';
 import { useParams } from '@tanstack/react-router';
 import { useAsync } from 'react-async-hook';
 import { api } from '../api/api';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
 
 export const League: React.FC = () => {
-    useTitle('League stuff');
     const leagueId = useParams({
         from: '/league_/$leagueId',
         select: (params) => params.leagueId,
     });
 
     const getLeagueCallback = useAsync(api.league.get, [leagueId]);
+
+    useTitle(getLeagueCallback.result?.leagues[0]?.name);
 
     if (getLeagueCallback.loading) {
         return <Container>Loading...</Container>;
@@ -34,10 +37,26 @@ export const League: React.FC = () => {
                 <li>ID: {league.id}</li>
                 <li>Max number of players: {league.maxPlayers}</li>
                 <li>
-                    Members:{' '}
+                    Members:
                     <ul>
                         {league.members.map((member) => (
-                            <li>{member.fullName}</li>
+                            <li key={member.id}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '1rem',
+                                    }}
+                                >
+                                    <Avatar
+                                        alt={member.fullName}
+                                        src={member.userImageUrl}
+                                    >
+                                        {`${member.firstName[0]}${member.lastName[0]}`}
+                                    </Avatar>
+                                    {member.fullName}
+                                </Box>
+                            </li>
                         ))}
                     </ul>
                 </li>

@@ -38,7 +38,7 @@ export const LeagueHome: React.FC = () => {
                             </>
                         ) : getLeaguesCallback.result?.leagues?.length ? (
                             getLeaguesCallback.result?.leagues.map((league) => (
-                                <li>
+                                <li key={league.id}>
                                     <Link
                                         to="/league/$leagueId"
                                         params={{ leagueId: league.id }}
