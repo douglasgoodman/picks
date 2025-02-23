@@ -19,7 +19,7 @@ export interface MemberDto {
 export interface LeagueDto {
     id: string;
     name: string;
-    maxPlayers: number;
+    maxTeams: number;
     members: MemberDto[];
 }
 
@@ -29,7 +29,7 @@ export interface LeagueGetResponse {
 
 export interface LeagueCreateRequest {
     name: string;
-    maxPlayers: number;
+    maxTeams: number;
 }
 
 export interface LeagueCreateResponse {

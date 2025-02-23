@@ -25,13 +25,13 @@ import Button from '@mui/material/Button';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/api';
 
-const maxPlayerPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const maxTeamsPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export const CreateLeague: React.FC = () => {
     useTitle('Create a league');
     const { user, inProgress: authInProgress } = useAuthContext();
     const [leagueName, setLeagueName] = useState<string>();
-    const [maxPlayers, setMaxPlayers] = useState<number>(4);
+    const [maxTeams, setMaxTeams] = useState<number>(4);
     const [leagueUrl, setLeagueUrl] = useState<string>();
     const [copied, setCopied] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -50,7 +50,7 @@ export const CreateLeague: React.FC = () => {
     }, [canvasRef, leagueUrl]);
 
     const handleCreateButtonClick = async () => {
-        await createLeagueCallback.execute(leagueName!, maxPlayers);
+        await createLeagueCallback.execute(leagueName!, maxTeams);
     };
 
     const handleCopyToClipboard = () => {
@@ -136,19 +136,19 @@ export const CreateLeague: React.FC = () => {
                                 required
                             />
                             <FormControl variant="filled" required>
-                                <InputLabel id="max-players-label">
-                                    Max number of players
+                                <InputLabel id="max-teams-label">
+                                    Max number of teams
                                 </InputLabel>
                                 <Select<number>
                                     disabled={createLeagueCallback.loading}
-                                    labelId="max-players-label"
-                                    id="max-players"
-                                    value={maxPlayers}
+                                    labelId="max-teams-label"
+                                    id="max-teams"
+                                    value={maxTeams}
                                     onChange={({ target: { value } }) =>
-                                        setMaxPlayers(value as number)
+                                        setMaxTeams(value as number)
                                     }
                                 >
-                                    {maxPlayerPossibleValues.map((value) => (
+                                    {maxTeamsPossibleValues.map((value) => (
                                         <MenuItem key={value} value={value}>
                                             {value}
                                         </MenuItem>

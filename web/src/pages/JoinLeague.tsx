@@ -4,58 +4,18 @@ import { LoadingOverlay } from '../components/LoadingOverlay';
 import { useAuthContext } from '../context/AuthContext';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import { useAsyncCallback } from 'react-async-hook';
-import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import { useTitle } from '../hooks/useTitle';
 import Button from '@mui/material/Button';
-import { useEffect, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { api } from '../api/api';
+import { useState } from 'react';
+import { useJoinLeague } from '../hooks/useJoinLeague';
 
 export const JoinLeague: React.FC = () => {
     useTitle('Join a league');
     const { user, inProgress: authInProgress } = useAuthContext();
     const [leagueId, setLeagueId] = useState<string>();
-    const [alertText, setAlertText] = useState<string>();
-    const [shouldRedirect, setShouldRedirect] = useState(false);
-    const navigate = useNavigate();
-
-    const joinLeagueCallback = useAsyncCallback(api.league.join, {
-        onError: (error) => {
-            if (axios.isAxiosError(error)) {
-                if (error.status === 404) {
-                    setAlertText('League not found');
-                } else if (error.status === 409) {
-                    setAlertText(
-                        'You are already a member of this league, redirecting...',
-                    );
-                    setShouldRedirect(true);
-                } else {
-                    setAlertText('An error occurred');
-                }
-            } else {
-                throw error;
-            }
-        },
-        onSuccess: () => {
-            setShouldRedirect(true);
-        },
-    });
-
-    useEffect(() => {
-        if (shouldRedirect && leagueId) {
-            setTimeout(
-                () =>
-                    navigate({
-                        to: '/league/$leagueId',
-                        params: { leagueId: leagueId },
-                    }),
-                3000,
-            );
-        }
-    }, [shouldRedirect, leagueId, navigate]);
+    const joinLeague = useJoinLeague(leagueId);
 
     return (
         <Container sx={{ padding: '2rem' }}>
@@ -77,21 +37,21 @@ export const JoinLeague: React.FC = () => {
                                 error={leagueId === ''}
                                 label="League ID"
                                 helperText="Required"
-                                disabled={joinLeagueCallback.loading}
+                                disabled={joinLeague.loading}
                                 required
                             />
                             <Button
-                                loading={joinLeagueCallback.loading}
+                                loading={joinLeague.loading}
                                 variant="contained"
                                 disabled={!leagueId}
-                                onClick={() =>
-                                    joinLeagueCallback.execute(leagueId!)
-                                }
+                                onClick={joinLeague.join}
                             >
                                 Join
                             </Button>
-                            {alertText && (
-                                <Alert severity="error">{alertText}</Alert>
+                            {joinLeague.alertText && (
+                                <Alert severity="error">
+                                    {joinLeague.alertText}
+                                </Alert>
                             )}
                         </Stack>
                     </Container>

@@ -33,7 +33,7 @@ export const createLeagueHandler: RequestHandler<
         _id: name,
         creator_id: req.session.user.id,
         name: req.body.name,
-        max_players: req.body.maxPlayers,
+        max_teams: req.body.maxTeams,
         member_ids: [req.session.user.id],
     });
     const createResponse: LeagueCreateResponse = { id: name };

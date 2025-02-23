@@ -18,7 +18,7 @@ export const getLeagueHandler: RequestHandler<
     }
 
     const docs = req.body.id
-        ? [await getLeagueDocument(req.body.id)]
+        ? [await getLeagueDocument(req.body.id)].filter(Boolean)
         : await getLeagueDocuments(req.session.user.id);
 
     if (!docs || docs.length === 0) {
@@ -48,7 +48,7 @@ export const getLeagueHandler: RequestHandler<
         leagues: docs.map((doc) => ({
             id: doc._id,
             name: doc.name,
-            maxPlayers: doc.max_players,
+            maxTeams: doc.max_teams,
             members: doc.member_ids.map(
                 (id) => mappedMembers.find((m) => m.id === id)!,
             ),

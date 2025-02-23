@@ -30,7 +30,7 @@ export async function uploadUserImage(
             Body: response.data,
         });
         await client.send(command);
-        return `https://${config.apiDomain}${UserRoute.image}/${id}`;
+        return `https://${config.apiDomain}${UserRoute.image}?id=${id}`;
     } catch (e) {
         console.error(e);
         return undefined;

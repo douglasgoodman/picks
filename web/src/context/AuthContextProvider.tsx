@@ -1,62 +1,49 @@
-import { useState, type PropsWithChildren } from 'react';
-import axios from 'axios';
+import { type PropsWithChildren } from 'react';
 import { AuthContext, AuthContextType } from './AuthContext';
-import { environment } from '../environment';
 import { useAsync, useAsyncCallback } from 'react-async-hook';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import {
-    AuthFetchResponse,
-    AuthStartResponse,
-    AuthRoute,
-} from '@picks/api-sdk';
-
-const axiosInstance = axios.create({
-    withCredentials: true,
-    baseURL: environment.apiDomain,
-});
+import { api } from '../api/api';
 
 export const AuthContextProvider: React.FC<PropsWithChildren> = ({
     children,
 }) => {
     const localStorage = useLocalStorage();
-    const [user, setUser] = useState<AuthFetchResponse>();
 
-    const { loading: fetchInProgress } = useAsync(async () => {
-        const response = await axiosInstance.get<AuthFetchResponse>(
-            AuthRoute.fetch,
-        );
-        const userResponse = response.data;
-        localStorage.set<string>('signInHint', userResponse.email);
-        setUser(userResponse);
-    }, []);
+    const userFetchCallback = useAsync(api.auth.fetch, [], {
+        onSuccess: (user) => {
+            localStorage.set<string>('signInHint', user.email);
+        },
+    });
 
-    const { loading: signInInProgress, execute: signIn } = useAsyncCallback(
+    const signInCallback = useAsyncCallback(
         async (path?: string) => {
             const hint = localStorage.get<string>('signInHint');
-            const response = await axiosInstance.get<AuthStartResponse>(
-                AuthRoute.start,
-                {
-                    params: { path, hint },
-                },
-            );
-            location.href = response.data.url;
+            return await api.auth.start(path, hint);
+        },
+        {
+            onSuccess: (response) => {
+                location.href = response.url;
+            },
         },
     );
 
-    const { loading: signOutInProgress, execute: signOut } = useAsyncCallback(
-        async () => {
-            await axiosInstance.get(AuthRoute.signOut);
+    const signOutCallback = useAsyncCallback(api.auth.signOut, {
+        onSuccess: () => {
             location.href = '/';
         },
-    );
+    });
 
-    const inProgress = fetchInProgress || signInInProgress || signOutInProgress;
+    const inProgress =
+        userFetchCallback.loading ||
+        userFetchCallback.status === 'not-requested' ||
+        signInCallback.loading ||
+        signOutCallback.loading;
 
     const context: AuthContextType = {
         inProgress,
-        user,
-        signIn,
-        signOut,
+        user: userFetchCallback.result,
+        signIn: signInCallback.execute,
+        signOut: signOutCallback.execute,
     };
 
     return (
