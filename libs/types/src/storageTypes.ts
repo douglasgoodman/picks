@@ -40,21 +40,3 @@ export interface Odds {
     away_spread: number;
     over_under: number;
 }
-
-export interface UserDocument {
-    _id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    full_name: string;
-    user_image_url?: string;
-    default_league_id?: string;
-}
-
-export interface LeagueDocument {
-    _id: string;
-    creator_id: string;
-    name: string;
-    max_teams: number;
-    member_ids: string[];
-}

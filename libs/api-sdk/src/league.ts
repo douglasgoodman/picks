@@ -16,11 +16,17 @@ export interface MemberDto {
     userImageUrl?: string;
 }
 
+export interface TeamDto {
+    userId: string;
+    name: string;
+}
+
 export interface LeagueDto {
     id: string;
     name: string;
     maxTeams: number;
     members: MemberDto[];
+    teams: TeamDto[];
 }
 
 export interface LeagueGetResponse {

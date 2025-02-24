@@ -1,6 +1,7 @@
 import {
     Document,
     MongoClient,
+    OptionalUnlessRequiredId,
     ServerApiVersion,
     UpdateFilter,
     type Filter,
@@ -15,6 +16,25 @@ const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING!, {
         deprecationErrors: true,
     },
 });
+
+export async function doesDocumentExist<T extends Document>(
+    collection: string,
+    filter: Filter<T>,
+): Promise<{ exists: boolean }> {
+    try {
+        await client.connect();
+        const result = await client
+            .db(dbName)
+            .collection<T>(collection)
+            .countDocuments(filter, { limit: 1 });
+        return { exists: result > 0 };
+    } catch (error) {
+        console.error(
+            `Error checking if document already exists in MongoDB: ${JSON.stringify(error)}`,
+        );
+        throw error;
+    }
+}
 
 export async function getDocument<T extends Document>(
     collection: string,
@@ -49,6 +69,25 @@ export async function getMultipleDocuments<T extends Document>(
     } catch (error) {
         console.error(
             `Error getting documents from MongoDB: ${JSON.stringify(error)}`,
+        );
+        throw error;
+    }
+}
+
+export async function insertDocument<T extends Document>(
+    collection: string,
+    document: OptionalUnlessRequiredId<T>,
+): Promise<void> {
+    try {
+        await client.connect();
+        const result = await client
+            .db(dbName)
+            .collection<T>(collection)
+            .insertOne(document, { forceServerObjectId: true });
+        console.log('result: ', JSON.stringify(result));
+    } catch (error) {
+        console.error(
+            `Error updating document in MongoDB: ${JSON.stringify(error)}`,
         );
         throw error;
     }

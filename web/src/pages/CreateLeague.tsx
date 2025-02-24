@@ -4,14 +4,10 @@ import { LoadingOverlay } from '../components/LoadingOverlay';
 import { useAuthContext } from '../context/AuthContext';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import { useAsyncCallback } from 'react-async-hook';
 import { environment } from '../environment';
 import Alert from '@mui/material/Alert';
-import FormHelperText from '@mui/material/FormHelperText';
 import FilledInput from '@mui/material/FilledInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
@@ -24,6 +20,7 @@ import { useTitle } from '../hooks/useTitle';
 import Button from '@mui/material/Button';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/api';
+import Slider from '@mui/material/Slider';
 
 const maxTeamsPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -135,27 +132,26 @@ export const CreateLeague: React.FC = () => {
                                 disabled={createLeagueCallback.loading}
                                 required
                             />
-                            <FormControl variant="filled" required>
-                                <InputLabel id="max-teams-label">
-                                    Max number of teams
-                                </InputLabel>
-                                <Select<number>
+                            <Box>
+                                <InputLabel>Max number of teams</InputLabel>
+                                <Slider
                                     disabled={createLeagueCallback.loading}
-                                    labelId="max-teams-label"
                                     id="max-teams"
+                                    valueLabelDisplay="auto"
+                                    marks={maxTeamsPossibleValues.map((n) => ({
+                                        value: n,
+                                        label: n,
+                                    }))}
+                                    step={1}
+                                    min={1}
+                                    max={10}
+                                    defaultValue={4}
                                     value={maxTeams}
-                                    onChange={({ target: { value } }) =>
+                                    onChange={(_, value) =>
                                         setMaxTeams(value as number)
                                     }
-                                >
-                                    {maxTeamsPossibleValues.map((value) => (
-                                        <MenuItem key={value} value={value}>
-                                            {value}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <FormHelperText>Required</FormHelperText>
-                            </FormControl>
+                                />
+                            </Box>
                             <Button
                                 loading={createLeagueCallback.loading}
                                 variant="contained"

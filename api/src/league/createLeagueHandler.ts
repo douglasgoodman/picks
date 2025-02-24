@@ -8,7 +8,10 @@ import {
     colors,
     animals,
 } from 'unique-names-generator';
-import { putLeagueDocument } from '../services/storage/league.js';
+import {
+    doesLeagueExist,
+    putLeagueDocument,
+} from '../services/storage/league.js';
 
 const nameGeneratorConfig: Config = {
     dictionaries: [names, ['the'], adjectives, colors, animals],
@@ -27,14 +30,18 @@ export const createLeagueHandler: RequestHandler<
         return;
     }
 
-    const name = uniqueNamesGenerator(nameGeneratorConfig).toLowerCase();
-    console.log(name);
-    putLeagueDocument({
+    let name = '';
+    do {
+        name = uniqueNamesGenerator(nameGeneratorConfig).toLowerCase();
+    } while ((await doesLeagueExist(name)).exists);
+
+    await putLeagueDocument({
         _id: name,
         creator_id: req.session.user.id,
         name: req.body.name,
         max_teams: req.body.maxTeams,
         member_ids: [req.session.user.id],
+        teams: [],
     });
     const createResponse: LeagueCreateResponse = { id: name };
     res.status(200).send(createResponse);

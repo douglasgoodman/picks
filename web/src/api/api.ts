@@ -11,6 +11,9 @@ import {
     LeagueJoinRequest,
     LeagueJoinResponse,
     LeagueRoute,
+    TeamCreateRequest,
+    TeamCreateResponse,
+    TeamRoute,
 } from '@picks/api-sdk';
 
 const axiosInstance = axios.create({
@@ -59,6 +62,15 @@ export const api = {
                 LeagueJoinRequest,
                 AxiosResponse<LeagueJoinResponse>
             >(LeagueRoute.join, { id });
+            return response.data;
+        },
+    },
+    team: {
+        create: async (userId: string, leagueId: string, name: string) => {
+            const response = await axiosInstance.post<
+                TeamCreateRequest,
+                AxiosResponse<TeamCreateResponse>
+            >(TeamRoute.create, { userId, leagueId, name });
             return response.data;
         },
     },

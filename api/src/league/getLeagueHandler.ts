@@ -52,6 +52,10 @@ export const getLeagueHandler: RequestHandler<
             members: doc.member_ids.map(
                 (id) => mappedMembers.find((m) => m.id === id)!,
             ),
+            teams: doc.teams.map((team) => ({
+                userId: team.user_id,
+                name: team.name,
+            })),
         })),
     });
 };

@@ -19,6 +19,7 @@ export const authFetchHandler: RequestHandler = async (req, res) => {
         }
 
         const user: AuthFetchResponse = {
+            id: userDocument._id,
             email: userDocument.email,
             firstName: userDocument.first_name,
             lastName: userDocument.last_name,

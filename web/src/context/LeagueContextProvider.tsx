@@ -28,7 +28,10 @@ export const LeagueContextProvider: React.FC<Props> = ({
         >
             {getLeagueCallback.result && (
                 <LeagueContext
-                    value={{ league: getLeagueCallback.result.leagues[0] }}
+                    value={{
+                        league: getLeagueCallback.result.leagues[0],
+                        refresh: getLeagueCallback.execute,
+                    }}
                 >
                     {children}
                 </LeagueContext>
