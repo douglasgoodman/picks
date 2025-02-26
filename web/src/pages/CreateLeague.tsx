@@ -21,6 +21,7 @@ import Button from '@mui/material/Button';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/api';
 import Slider from '@mui/material/Slider';
+import Paper from '@mui/material/Paper';
 
 const maxTeamsPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -60,7 +61,7 @@ export const CreateLeague: React.FC = () => {
 
     if (leagueUrl) {
         return (
-            <Container sx={{ padding: '2rem' }}>
+            <Container sx={{ padding: '3rem' }} component={Paper}>
                 <Container component="form" maxWidth="sm">
                     <Stack spacing={2}>
                         <Typography variant="h5">
@@ -110,7 +111,7 @@ export const CreateLeague: React.FC = () => {
     }
 
     return (
-        <Container sx={{ padding: '2rem' }}>
+        <Container sx={{ padding: '5rem' }} component={Paper}>
             <LoadingOverlay isLoading={!!authInProgress}>
                 {user ? (
                     <Container component="form" maxWidth="sm">

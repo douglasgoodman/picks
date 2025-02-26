@@ -10,6 +10,7 @@ import { useTitle } from '../hooks/useTitle';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useJoinLeague } from '../hooks/useJoinLeague';
+import Paper from '@mui/material/Paper';
 
 export const JoinLeague: React.FC = () => {
     useTitle('Join a league');
@@ -18,11 +19,15 @@ export const JoinLeague: React.FC = () => {
     const joinLeague = useJoinLeague(leagueId);
 
     return (
-        <Container sx={{ padding: '2rem' }}>
+        <Container sx={{ padding: '5rem' }} component={Paper}>
             <LoadingOverlay isLoading={!!authInProgress}>
                 {user ? (
-                    <Container component="form" maxWidth="sm">
-                        <Stack spacing={2}>
+                    <Box
+                        display="flex"
+                        component="form"
+                        justifyContent="center"
+                    >
+                        <Stack spacing={2} minWidth="50%">
                             <Typography variant="h5">
                                 <Box sx={{ textAlign: 'center' }}>
                                     Let's join a league!
@@ -54,7 +59,7 @@ export const JoinLeague: React.FC = () => {
                                 </Alert>
                             )}
                         </Stack>
-                    </Container>
+                    </Box>
                 ) : (
                     <Typography>Sign in first</Typography>
                 )}

@@ -26,7 +26,13 @@ export const createTeamHandler: RequestHandler<
     }
 
     if (doc.teams.find((t) => t.user_id === userId)) {
-        res.sendStatus(409);
+        res.sendStatus(400);
+        return;
+    }
+
+    if (doc.teams.find((t) => t.name === name)) {
+        res.status(409);
+        res.send({ message: 'A team with that name already exists' });
         return;
     }
 

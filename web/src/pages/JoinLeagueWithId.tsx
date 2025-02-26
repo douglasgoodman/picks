@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { useJoinLeague } from '../hooks/useJoinLeague';
 import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
 
 export const JoinLeagueWithId: React.FC = () => {
     const { league } = useLeagueContext();
@@ -15,8 +16,8 @@ export const JoinLeagueWithId: React.FC = () => {
     const joinLeague = useJoinLeague(league.id);
 
     return (
-        <Container sx={{ padding: '2rem' }}>
-            <Container component="form" maxWidth="sm">
+        <Container sx={{ padding: '5rem' }} component={Paper}>
+            <Box component="form" display="flex" justifyContent="center">
                 <Stack spacing={2}>
                     <Typography variant="h5">
                         <Box sx={{ textAlign: 'center' }}>
@@ -34,7 +35,7 @@ export const JoinLeagueWithId: React.FC = () => {
                         <Alert severity="error">{joinLeague.alertText}</Alert>
                     )}
                 </Stack>
-            </Container>
+            </Box>
         </Container>
     );
 };

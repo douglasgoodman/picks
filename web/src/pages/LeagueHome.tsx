@@ -25,19 +25,20 @@ export const LeagueHome: React.FC = () => {
     const { leagues } = useLeaguesContext();
 
     return (
-        <Container sx={{ padding: '2rem' }}>
+        <Container sx={{ padding: '2rem' }} component={Paper}>
             <Stack spacing={2}>
-                <Typography variant="h4">Your leagues</Typography>
-                <ButtonGroup>
-                    <Button component={Link} to="/league/create">
-                        Create a league
-                    </Button>
-                    <Button component={Link} to="/league/join">
-                        Join a league
-                    </Button>
-                </ButtonGroup>
-
-                <TableContainer component={Paper}>
+                <Stack direction="row" justifyContent="space-between">
+                    <Typography variant="h4">Your leagues</Typography>
+                    <ButtonGroup>
+                        <Button component={Link} to="/league/create">
+                            Create a league
+                        </Button>
+                        <Button component={Link} to="/league/join">
+                            Join a league
+                        </Button>
+                    </ButtonGroup>
+                </Stack>
+                <TableContainer>
                     <Table>
                         <TableHead>
                             <TableRow>
