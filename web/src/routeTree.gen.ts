@@ -17,6 +17,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as LeagueJoinImport } from './routes/league_.join'
 import { Route as LeagueCreateImport } from './routes/league_.create'
 import { Route as LeagueLeagueIdImport } from './routes/league_.$leagueId'
+import { Route as LeagueLeagueIdSettingsImport } from './routes/league_.$leagueId_.settings'
 import { Route as LeagueLeagueIdJoinImport } from './routes/league_.$leagueId_.join'
 
 // Create/Update Routes
@@ -54,6 +55,12 @@ const LeagueCreateRoute = LeagueCreateImport.update({
 const LeagueLeagueIdRoute = LeagueLeagueIdImport.update({
   id: '/league_/$leagueId',
   path: '/league/$leagueId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LeagueLeagueIdSettingsRoute = LeagueLeagueIdSettingsImport.update({
+  id: '/league_/$leagueId_/settings',
+  path: '/league/$leagueId/settings',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -116,6 +123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeagueLeagueIdJoinImport
       parentRoute: typeof rootRoute
     }
+    '/league_/$leagueId_/settings': {
+      id: '/league_/$leagueId_/settings'
+      path: '/league/$leagueId/settings'
+      fullPath: '/league/$leagueId/settings'
+      preLoaderRoute: typeof LeagueLeagueIdSettingsImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -129,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/league/create': typeof LeagueCreateRoute
   '/league/join': typeof LeagueJoinRoute
   '/league/$leagueId/join': typeof LeagueLeagueIdJoinRoute
+  '/league/$leagueId/settings': typeof LeagueLeagueIdSettingsRoute
 }
 
 export interface FileRoutesByTo {
@@ -139,6 +154,7 @@ export interface FileRoutesByTo {
   '/league/create': typeof LeagueCreateRoute
   '/league/join': typeof LeagueJoinRoute
   '/league/$leagueId/join': typeof LeagueLeagueIdJoinRoute
+  '/league/$leagueId/settings': typeof LeagueLeagueIdSettingsRoute
 }
 
 export interface FileRoutesById {
@@ -150,6 +166,7 @@ export interface FileRoutesById {
   '/league_/create': typeof LeagueCreateRoute
   '/league_/join': typeof LeagueJoinRoute
   '/league_/$leagueId_/join': typeof LeagueLeagueIdJoinRoute
+  '/league_/$leagueId_/settings': typeof LeagueLeagueIdSettingsRoute
 }
 
 export interface FileRouteTypes {
@@ -162,6 +179,7 @@ export interface FileRouteTypes {
     | '/league/create'
     | '/league/join'
     | '/league/$leagueId/join'
+    | '/league/$leagueId/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -171,6 +189,7 @@ export interface FileRouteTypes {
     | '/league/create'
     | '/league/join'
     | '/league/$leagueId/join'
+    | '/league/$leagueId/settings'
   id:
     | '__root__'
     | '/'
@@ -180,6 +199,7 @@ export interface FileRouteTypes {
     | '/league_/create'
     | '/league_/join'
     | '/league_/$leagueId_/join'
+    | '/league_/$leagueId_/settings'
   fileRoutesById: FileRoutesById
 }
 
@@ -191,6 +211,7 @@ export interface RootRouteChildren {
   LeagueCreateRoute: typeof LeagueCreateRoute
   LeagueJoinRoute: typeof LeagueJoinRoute
   LeagueLeagueIdJoinRoute: typeof LeagueLeagueIdJoinRoute
+  LeagueLeagueIdSettingsRoute: typeof LeagueLeagueIdSettingsRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -201,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeagueCreateRoute: LeagueCreateRoute,
   LeagueJoinRoute: LeagueJoinRoute,
   LeagueLeagueIdJoinRoute: LeagueLeagueIdJoinRoute,
+  LeagueLeagueIdSettingsRoute: LeagueLeagueIdSettingsRoute,
 }
 
 export const routeTree = rootRoute
@@ -219,7 +241,8 @@ export const routeTree = rootRoute
         "/league_/$leagueId",
         "/league_/create",
         "/league_/join",
-        "/league_/$leagueId_/join"
+        "/league_/$leagueId_/join",
+        "/league_/$leagueId_/settings"
       ]
     },
     "/": {
@@ -242,6 +265,9 @@ export const routeTree = rootRoute
     },
     "/league_/$leagueId_/join": {
       "filePath": "league_.$leagueId_.join.tsx"
+    },
+    "/league_/$leagueId_/settings": {
+      "filePath": "league_.$leagueId_.settings.tsx"
     }
   }
 }

@@ -5,7 +5,7 @@ import { joinLeagueHandler } from './joinLeagueHandler.js';
 import { getLeagueHandler } from './getLeagueHandler.js';
 
 export function addLeagueRouter(app: Express) {
-    app.post(LeagueRoute.get, getLeagueHandler);
+    app.get(LeagueRoute.get, getLeagueHandler);
     app.post(LeagueRoute.create, createLeagueHandler);
     app.post(LeagueRoute.join, joinLeagueHandler);
 }

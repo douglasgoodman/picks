@@ -4,10 +4,12 @@ import {
     AuthFetchResponse,
     AuthRoute,
     AuthStartResponse,
+    EspnRoute,
+    GetLeagueResponse,
+    GetMyLeaguesResponse,
+    GetOddsProvidersResponse,
     LeagueCreateRequest,
     LeagueCreateResponse,
-    LeagueGetRequest,
-    LeagueGetResponse,
     LeagueJoinRequest,
     LeagueJoinResponse,
     LeagueRoute,
@@ -43,18 +45,34 @@ export const api = {
         },
     },
     league: {
-        get: async (id?: string) => {
-            const response = await axiosInstance.post<
-                LeagueGetRequest,
-                AxiosResponse<LeagueGetResponse>
-            >(LeagueRoute.get, { id });
+        get: async (id: string) => {
+            const response = await axiosInstance.get<GetLeagueResponse>(
+                LeagueRoute.get,
+                { params: { id } },
+            );
             return response.data;
         },
-        create: async (name: string, maxTeams: number) => {
+        getMy: async () => {
+            const response = await axiosInstance.get<GetMyLeaguesResponse>(
+                LeagueRoute.get,
+            );
+            return response.data;
+        },
+        create: async (
+            name: string,
+            maxTeams: number,
+            noveltyTeams: string[],
+            oddsProviderId?: string,
+        ) => {
             const response = await axiosInstance.post<
                 LeagueCreateRequest,
                 AxiosResponse<LeagueCreateResponse>
-            >(LeagueRoute.create, { name, maxTeams: maxTeams });
+            >(LeagueRoute.create, {
+                name,
+                maxTeams,
+                noveltyTeams,
+                oddsProviderId,
+            });
             return response.data;
         },
         join: async (id: string) => {
@@ -71,6 +89,14 @@ export const api = {
                 TeamCreateRequest,
                 AxiosResponse<TeamCreateResponse>
             >(TeamRoute.create, { userId, leagueId, name });
+            return response.data;
+        },
+    },
+    espn: {
+        getOddsProviders: async () => {
+            const response = await axiosInstance.get<GetOddsProvidersResponse>(
+                EspnRoute.getOddsProviders,
+            );
             return response.data;
         },
     },

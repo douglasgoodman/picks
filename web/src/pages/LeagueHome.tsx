@@ -43,8 +43,8 @@ export const LeagueHome: React.FC = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Name</TableCell>
-                                <TableCell>Teams</TableCell>
-                                <TableCell>Members</TableCell>
+                                <TableCell align="right">Teams</TableCell>
+                                <TableCell align="right">Members</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>

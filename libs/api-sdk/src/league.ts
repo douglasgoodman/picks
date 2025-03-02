@@ -1,12 +1,8 @@
 export const LeagueRoute = {
-    get: '/league/get',
-    create: '/league/create',
-    join: '/league/join',
+    get: '/league/get' as const,
+    create: '/league/create' as const,
+    join: '/league/join' as const,
 };
-
-export interface LeagueGetRequest {
-    id?: string;
-}
 
 export interface MemberDto {
     id: string;
@@ -21,21 +17,44 @@ export interface TeamDto {
     name: string;
 }
 
+export enum NoveltyTeam {
+    Random = 'random',
+    Favorite = 'favorite',
+}
+
+export interface OddsProvider {
+    id: string;
+    name: string;
+}
+
+export interface LeagueConfigurationDto {
+    maxTeams: number;
+    noveltyTeams: NoveltyTeam[];
+    oddsProvider?: OddsProvider;
+}
+
 export interface LeagueDto {
     id: string;
     name: string;
-    maxTeams: number;
     members: MemberDto[];
+    admins: MemberDto[];
     teams: TeamDto[];
+    configuration: LeagueConfigurationDto;
 }
 
-export interface LeagueGetResponse {
+export interface GetLeagueResponse {
+    league: LeagueDto;
+}
+
+export interface GetMyLeaguesResponse {
     leagues: LeagueDto[];
 }
 
 export interface LeagueCreateRequest {
     name: string;
     maxTeams: number;
+    oddsProviderId?: string | undefined;
+    noveltyTeams: string[];
 }
 
 export interface LeagueCreateResponse {

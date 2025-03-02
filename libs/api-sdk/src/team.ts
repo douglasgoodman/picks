@@ -1,5 +1,5 @@
 export const TeamRoute = {
-    create: '/team/create',
+    create: '/team/create' as const,
 };
 
 export interface TeamCreateRequest {

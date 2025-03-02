@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import { addLeagueRouter } from './league/leagueRouter.js';
 import { addTeamRouter } from './team/teamRouter.js';
+import { addEspnRouter } from './espn/espnRouter.js';
 
 const app = express();
 app.set('trust proxy', true);
@@ -35,6 +36,7 @@ addAuthRouter(app);
 addUserRouter(app);
 addLeagueRouter(app);
 addTeamRouter(app);
+addEspnRouter(app);
 
 app.get('/hi', (_, res) => {
     res.send('hello!!');

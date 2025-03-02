@@ -3,7 +3,6 @@ import { RequestHandler } from 'express';
 import {
     addLeagueTeam,
     getLeagueDocument,
-    putLeagueDocument,
 } from '../services/storage/league.js';
 
 export const createTeamHandler: RequestHandler<

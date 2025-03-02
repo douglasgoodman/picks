@@ -7,7 +7,7 @@ import { LoadingOverlay } from '../components/LoadingOverlay';
 export const LeaguesContextProvider: React.FC<PropsWithChildren> = ({
     children,
 }) => {
-    const getLeaguesCallback = useAsync(api.league.get, []);
+    const getLeaguesCallback = useAsync(api.league.getMy, []);
 
     if (getLeaguesCallback.error) {
         return <div>Error: {getLeaguesCallback.error?.message}</div>;

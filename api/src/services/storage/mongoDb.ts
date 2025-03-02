@@ -46,7 +46,6 @@ export async function getDocument<T extends Document>(
             .db(dbName)
             .collection<T>(collection)
             .findOne(filter);
-        console.log('result: ', JSON.stringify(result));
         return result as T;
     } catch (error) {
         console.error(
@@ -64,7 +63,6 @@ export async function getMultipleDocuments<T extends Document>(
         await client.connect();
         const cursor = client.db(dbName).collection<T>(collection).find(filter);
         const result = await cursor.toArray();
-        console.log('result: ', JSON.stringify(result));
         return result as T[];
     } catch (error) {
         console.error(
@@ -80,11 +78,25 @@ export async function insertDocument<T extends Document>(
 ): Promise<void> {
     try {
         await client.connect();
-        const result = await client
+        await client
             .db(dbName)
             .collection<T>(collection)
             .insertOne(document, { forceServerObjectId: true });
-        console.log('result: ', JSON.stringify(result));
+    } catch (error) {
+        console.error(
+            `Error updating document in MongoDB: ${JSON.stringify(error)}`,
+        );
+        throw error;
+    }
+}
+
+export async function insertMultipleDocuments<T extends Document>(
+    collection: string,
+    documents: OptionalUnlessRequiredId<T>[],
+): Promise<void> {
+    try {
+        await client.connect();
+        await client.db(dbName).collection<T>(collection).insertMany(documents);
     } catch (error) {
         console.error(
             `Error updating document in MongoDB: ${JSON.stringify(error)}`,
@@ -107,7 +119,6 @@ export async function putDocument<T extends Document>(
                 { $set: document },
                 { upsert: true },
             );
-        console.log('result: ', JSON.stringify(result));
     } catch (error) {
         console.error(
             `Error updating document in MongoDB: ${JSON.stringify(error)}`,
@@ -127,7 +138,6 @@ export async function updateDocument<T extends Document>(
             .db(dbName)
             .collection<T>(collection)
             .updateOne(filter, update);
-        console.log('result: ', JSON.stringify(result));
     } catch (error) {
         console.error(
             `Error updating document in MongoDB: ${JSON.stringify(error)}`,

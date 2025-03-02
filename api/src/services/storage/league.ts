@@ -7,22 +7,22 @@ import {
     updateDocument,
 } from './mongoDb.js';
 
-const colectionName = 'leagues';
+const collectionName = 'leagues';
 
 export async function doesLeagueExist(
     id: string,
 ): Promise<{ exists: boolean }> {
-    return await doesDocumentExist<LeagueDocument>(colectionName, { _id: id });
+    return await doesDocumentExist<LeagueDocument>(collectionName, { _id: id });
 }
 
 export async function getLeagueDocument(id: string): Promise<LeagueDocument> {
-    return await getDocument<LeagueDocument>(colectionName, { _id: id });
+    return await getDocument<LeagueDocument>(collectionName, { _id: id });
 }
 
 export async function getLeagueDocuments(
     id: string,
 ): Promise<LeagueDocument[]> {
-    return await getMultipleDocuments<LeagueDocument>(colectionName, {
+    return await getMultipleDocuments<LeagueDocument>(collectionName, {
         member_ids: id,
     });
 }
@@ -30,12 +30,12 @@ export async function getLeagueDocuments(
 export async function putLeagueDocument(
     document: LeagueDocument,
 ): Promise<void> {
-    return await putDocument<LeagueDocument>(colectionName, document);
+    return await putDocument<LeagueDocument>(collectionName, document);
 }
 
 export async function addLeagueTeam(id: string, userId: string, name: string) {
     return await updateDocument<LeagueDocument>(
-        colectionName,
+        collectionName,
         { _id: id },
         { $push: { teams: { user_id: userId, name: name } } },
     );
@@ -43,7 +43,7 @@ export async function addLeagueTeam(id: string, userId: string, name: string) {
 
 export async function addLeagueMember(id: string, user_id: string) {
     return await updateDocument<LeagueDocument>(
-        colectionName,
+        collectionName,
         { _id: id },
         { $push: { member_ids: user_id } },
     );
