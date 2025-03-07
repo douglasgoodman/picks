@@ -35,7 +35,7 @@ export const Home: React.FC = () => {
                     >
                         Join a league
                     </Button>
-                    <Button variant="contained" component={Link} to="/league">
+                    <Button variant="contained" component={Link} to="/signIn">
                         My leagues
                     </Button>
                 </ButtonGroup>

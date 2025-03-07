@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { LoadingOverlay } from '../components/LoadingOverlay';
-import { useAuthContext } from '../context/AuthContext';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import InputLabel from '@mui/material/InputLabel';
@@ -33,7 +31,6 @@ const maxTeamsPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export const CreateLeague: React.FC = () => {
     useTitle('Create a league');
-    const { user, inProgress: authInProgress } = useAuthContext();
     const [leagueName, setLeagueName] = useState<string>();
     const [isAts, setIsAts] = useState(false);
     const [oddsProviderId, setOddsProviderId] = useState<string | null>(null);
@@ -150,135 +147,118 @@ export const CreateLeague: React.FC = () => {
 
     return (
         <Container sx={{ padding: '5rem' }} component={Paper}>
-            <LoadingOverlay isLoading={!!authInProgress}>
-                {user ? (
-                    <Container component="form" maxWidth="sm">
-                        <Stack spacing={2}>
-                            <Typography variant="h5">
-                                <Box sx={{ textAlign: 'center' }}>
-                                    Let's create a new league!
-                                </Box>
-                            </Typography>
-                            <TextField
-                                variant="filled"
-                                value={leagueName || ''}
-                                onChange={({ target: { value } }) =>
-                                    setLeagueName(value)
-                                }
-                                error={leagueName === ''}
-                                label="League name"
-                                helperText="Required"
-                                disabled={isLoading}
-                                required
-                            />
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            disabled={isLoading}
-                                            checked={includeFavoritesTeam}
-                                            onChange={(e) =>
-                                                setIncludeFavoritesTeam(
-                                                    e.target.checked,
-                                                )
-                                            }
-                                        />
-                                    }
-                                    label="Add a team that only picks favorites"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            disabled={isLoading}
-                                            checked={includeRandomTeam}
-                                            onChange={(e) =>
-                                                setIncludeRandomTeam(
-                                                    e.target.checked,
-                                                )
-                                            }
-                                        />
-                                    }
-                                    label="Add a team picks randomly"
-                                />
-                            </FormGroup>
-                            <Box>
-                                <InputLabel>Max number of teams</InputLabel>
-                                <Slider
+            <Container component="form" maxWidth="sm">
+                <Stack spacing={2}>
+                    <Typography variant="h5">
+                        <Box sx={{ textAlign: 'center' }}>
+                            Let's create a new league!
+                        </Box>
+                    </Typography>
+                    <TextField
+                        variant="filled"
+                        value={leagueName || ''}
+                        onChange={({ target: { value } }) =>
+                            setLeagueName(value)
+                        }
+                        error={leagueName === ''}
+                        label="League name"
+                        helperText="Required"
+                        disabled={isLoading}
+                        required
+                    />
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
                                     disabled={isLoading}
-                                    id="max-teams"
-                                    valueLabelDisplay="auto"
-                                    marks={maxTeamsPossibleValues.map((n) => ({
-                                        value: n,
-                                        label: n,
-                                    }))}
-                                    step={1}
-                                    min={1}
-                                    max={10}
-                                    defaultValue={4}
-                                    value={maxTeams}
-                                    onChange={(_, value) =>
-                                        setMaxTeams(value as number)
+                                    checked={includeFavoritesTeam}
+                                    onChange={(e) =>
+                                        setIncludeFavoritesTeam(
+                                            e.target.checked,
+                                        )
                                     }
                                 />
-                            </Box>
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            disabled={isLoading}
-                                            checked={isAts}
-                                            onChange={(e) =>
-                                                setIsAts(e.target.checked)
-                                            }
-                                        />
-                                    }
-                                    label="Pick ATS"
-                                />
-                            </FormGroup>
-                            {isAts && getOddsProvidersCallback.result && (
-                                <Autocomplete
-                                    value={selectedOddsProvider}
-                                    onChange={(_, v) =>
-                                        setOddsProviderId(v?.id ?? null)
-                                    }
-                                    options={getOddsProvidersCallback.result.oddsProviders.map(
-                                        (p) => ({
-                                            label: p.name,
-                                            id: p.id,
-                                        }),
-                                    )}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Odds provider"
-                                        />
-                                    )}
-                                    getOptionLabel={(option) =>
-                                        option.label ?? ''
+                            }
+                            label="Add a team that only picks favorites"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includeRandomTeam}
+                                    onChange={(e) =>
+                                        setIncludeRandomTeam(e.target.checked)
                                     }
                                 />
+                            }
+                            label="Add a team picks randomly"
+                        />
+                    </FormGroup>
+                    <Box>
+                        <InputLabel>Max number of teams</InputLabel>
+                        <Slider
+                            disabled={isLoading}
+                            id="max-teams"
+                            valueLabelDisplay="auto"
+                            marks={maxTeamsPossibleValues.map((n) => ({
+                                value: n,
+                                label: n,
+                            }))}
+                            step={1}
+                            min={1}
+                            max={10}
+                            defaultValue={4}
+                            value={maxTeams}
+                            onChange={(_, value) =>
+                                setMaxTeams(value as number)
+                            }
+                        />
+                    </Box>
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={isAts}
+                                    onChange={(e) => setIsAts(e.target.checked)}
+                                />
+                            }
+                            label="Pick ATS"
+                        />
+                    </FormGroup>
+                    {isAts && getOddsProvidersCallback.result && (
+                        <Autocomplete
+                            value={selectedOddsProvider}
+                            onChange={(_, v) =>
+                                setOddsProviderId(v?.id ?? null)
+                            }
+                            options={getOddsProvidersCallback.result.oddsProviders.map(
+                                (p) => ({
+                                    label: p.name,
+                                    id: p.id,
+                                }),
                             )}
-                            <Button
-                                loading={isLoading}
-                                variant="contained"
-                                disabled={
-                                    !leagueName || (isAts && !oddsProviderId)
-                                }
-                                onClick={handleCreateButtonClick}
-                            >
-                                Create
-                            </Button>
-                            {createLeagueCallback.error && (
-                                <Alert severity="error">
-                                    We were unable to create a league!
-                                </Alert>
+                            renderInput={(params) => (
+                                <TextField {...params} label="Odds provider" />
                             )}
-                        </Stack>
-                    </Container>
-                ) : (
-                    <Typography>Sign in first</Typography>
-                )}
-            </LoadingOverlay>
+                            getOptionLabel={(option) => option.label ?? ''}
+                        />
+                    )}
+                    <Button
+                        loading={isLoading}
+                        variant="contained"
+                        disabled={!leagueName || (isAts && !oddsProviderId)}
+                        onClick={handleCreateButtonClick}
+                    >
+                        Create
+                    </Button>
+                    {createLeagueCallback.error && (
+                        <Alert severity="error">
+                            We were unable to create a league!
+                        </Alert>
+                    )}
+                </Stack>
+            </Container>
         </Container>
     );
 };

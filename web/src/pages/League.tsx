@@ -1,5 +1,4 @@
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import { useTitle } from '../hooks/useTitle';
 import { useLeagueContext } from '../context/LeagueContext';
 import { useAuthContext } from '../context/AuthContext';
@@ -11,13 +10,9 @@ export const League: React.FC = () => {
     const { user } = useAuthContext();
     useTitle(league.name);
 
-    if (!user) {
-        return <Typography>Sign in first</Typography>;
-    }
-
     if (
         !league.teams.length ||
-        !league.teams.find((t) => t.userId === user?.id)
+        !league.teams.find((t) => t.userId === user.id)
     ) {
         return (
             <Container sx={{ padding: '2rem' }}>

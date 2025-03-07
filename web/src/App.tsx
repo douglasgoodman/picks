@@ -1,6 +1,5 @@
 import { Header } from './components/Header';
 import {
-    Container,
     createTheme,
     CssBaseline,
     PaletteMode,
@@ -8,9 +7,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { useLocalStorage } from './hooks/useLocalStorage';
-//import { LoadingOverlay } from './components/LoadingOverlay';
 import { type PropsWithChildren, StrictMode, useMemo, useState } from 'react';
-import { AuthContextProvider } from './context/AuthContextProvider';
 
 export const App: React.FC<PropsWithChildren> = ({ children }) => {
     const localStorage = useLocalStorage();
@@ -42,13 +39,11 @@ export const App: React.FC<PropsWithChildren> = ({ children }) => {
         <StrictMode>
             <ThemeProvider theme={theme}>
                 <CssBaseline enableColorScheme>
-                    <AuthContextProvider>
-                        <Header
-                            paletteMode={paletteMode}
-                            togglePaletteMode={togglePaletteMode}
-                        />
-                        <Container>{children}</Container>
-                    </AuthContextProvider>
+                    <Header
+                        paletteMode={paletteMode}
+                        togglePaletteMode={togglePaletteMode}
+                    />
+                    {children}
                 </CssBaseline>
             </ThemeProvider>
         </StrictMode>

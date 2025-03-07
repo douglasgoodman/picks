@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 
 export const LeagueHome: React.FC = () => {
-    useTitle('League Home');
+    useTitle('My Leagues');
     const navigate = useNavigate();
 
     const { leagues } = useLeaguesContext();
@@ -28,7 +28,7 @@ export const LeagueHome: React.FC = () => {
         <Container sx={{ padding: '2rem' }} component={Paper}>
             <Stack spacing={2}>
                 <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="h4">Your leagues</Typography>
+                    <Typography variant="h4">My leagues</Typography>
                     <ButtonGroup>
                         <Button component={Link} to="/league/create">
                             Create a league

@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { LoadingOverlay } from '../components/LoadingOverlay';
-import { useAuthContext } from '../context/AuthContext';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
@@ -14,56 +12,41 @@ import Paper from '@mui/material/Paper';
 
 export const JoinLeague: React.FC = () => {
     useTitle('Join a league');
-    const { user, inProgress: authInProgress } = useAuthContext();
     const [leagueId, setLeagueId] = useState<string>();
     const joinLeague = useJoinLeague(leagueId);
 
     return (
         <Container sx={{ padding: '5rem' }} component={Paper}>
-            <LoadingOverlay isLoading={!!authInProgress}>
-                {user ? (
-                    <Box
-                        display="flex"
-                        component="form"
-                        justifyContent="center"
+            <Box display="flex" component="form" justifyContent="center">
+                <Stack spacing={2} minWidth="50%">
+                    <Typography variant="h5">
+                        <Box sx={{ textAlign: 'center' }}>
+                            Let's join a league!
+                        </Box>
+                    </Typography>
+                    <TextField
+                        variant="filled"
+                        value={leagueId || ''}
+                        onChange={({ target: { value } }) => setLeagueId(value)}
+                        error={leagueId === ''}
+                        label="League ID"
+                        helperText="Required"
+                        disabled={joinLeague.loading}
+                        required
+                    />
+                    <Button
+                        loading={joinLeague.loading}
+                        variant="contained"
+                        disabled={!leagueId}
+                        onClick={joinLeague.join}
                     >
-                        <Stack spacing={2} minWidth="50%">
-                            <Typography variant="h5">
-                                <Box sx={{ textAlign: 'center' }}>
-                                    Let's join a league!
-                                </Box>
-                            </Typography>
-                            <TextField
-                                variant="filled"
-                                value={leagueId || ''}
-                                onChange={({ target: { value } }) =>
-                                    setLeagueId(value)
-                                }
-                                error={leagueId === ''}
-                                label="League ID"
-                                helperText="Required"
-                                disabled={joinLeague.loading}
-                                required
-                            />
-                            <Button
-                                loading={joinLeague.loading}
-                                variant="contained"
-                                disabled={!leagueId}
-                                onClick={joinLeague.join}
-                            >
-                                Join
-                            </Button>
-                            {joinLeague.alertText && (
-                                <Alert severity="error">
-                                    {joinLeague.alertText}
-                                </Alert>
-                            )}
-                        </Stack>
-                    </Box>
-                ) : (
-                    <Typography>Sign in first</Typography>
-                )}
-            </LoadingOverlay>
+                        Join
+                    </Button>
+                    {joinLeague.alertText && (
+                        <Alert severity="error">{joinLeague.alertText}</Alert>
+                    )}
+                </Stack>
+            </Box>
         </Container>
     );
 };

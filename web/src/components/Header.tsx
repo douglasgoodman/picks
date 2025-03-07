@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
     togglePaletteMode,
 }) => {
     const { isMobileUi } = useIsMobileUi();
-    const { user, signOut, inProgress } = useAuthContext();
+    const { isAuthenticated, user, signOut, inProgress } = useAuthContext();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const open = Boolean(anchorEl);
 
@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
                         </Typography>
                     )}
                 </Box>
-                {!!user && (
+                {isAuthenticated && (
                     <>
                         <AvatarWithName
                             firstName={user.firstName}

@@ -4,7 +4,8 @@ import { AuthFetchResponse } from '@picks/api-sdk';
 export type AuthenticatedUser = AuthFetchResponse;
 
 export interface AuthContextType {
-    user: AuthenticatedUser | undefined;
+    isAuthenticated: boolean;
+    user: AuthenticatedUser;
     inProgress: boolean | undefined;
     signIn: (path?: string) => void;
     signOut: () => void;
@@ -15,7 +16,8 @@ const notMountedFunction = () => {
 };
 
 export const AuthContext = createContext<AuthContextType>({
-    user: undefined,
+    isAuthenticated: false,
+    user: {} as AuthenticatedUser,
     inProgress: undefined,
     signIn: notMountedFunction,
     signOut: notMountedFunction,

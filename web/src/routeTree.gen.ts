@@ -12,7 +12,6 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SignInImport } from './routes/signIn'
-import { Route as LeagueImport } from './routes/league'
 import { Route as IndexImport } from './routes/index'
 import { Route as LeagueJoinImport } from './routes/league_.join'
 import { Route as LeagueCreateImport } from './routes/league_.create'
@@ -25,12 +24,6 @@ import { Route as LeagueLeagueIdJoinImport } from './routes/league_.$leagueId_.j
 const SignInRoute = SignInImport.update({
   id: '/signIn',
   path: '/signIn',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LeagueRoute = LeagueImport.update({
-  id: '/league',
-  path: '/league',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -79,13 +72,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/league': {
-      id: '/league'
-      path: '/league'
-      fullPath: '/league'
-      preLoaderRoute: typeof LeagueImport
       parentRoute: typeof rootRoute
     }
     '/signIn': {
@@ -137,7 +123,6 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/league': typeof LeagueRoute
   '/signIn': typeof SignInRoute
   '/league/$leagueId': typeof LeagueLeagueIdRoute
   '/league/create': typeof LeagueCreateRoute
@@ -148,7 +133,6 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/league': typeof LeagueRoute
   '/signIn': typeof SignInRoute
   '/league/$leagueId': typeof LeagueLeagueIdRoute
   '/league/create': typeof LeagueCreateRoute
@@ -160,7 +144,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/league': typeof LeagueRoute
   '/signIn': typeof SignInRoute
   '/league_/$leagueId': typeof LeagueLeagueIdRoute
   '/league_/create': typeof LeagueCreateRoute
@@ -173,7 +156,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/league'
     | '/signIn'
     | '/league/$leagueId'
     | '/league/create'
@@ -183,7 +165,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/league'
     | '/signIn'
     | '/league/$leagueId'
     | '/league/create'
@@ -193,7 +174,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/league'
     | '/signIn'
     | '/league_/$leagueId'
     | '/league_/create'
@@ -205,7 +185,6 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LeagueRoute: typeof LeagueRoute
   SignInRoute: typeof SignInRoute
   LeagueLeagueIdRoute: typeof LeagueLeagueIdRoute
   LeagueCreateRoute: typeof LeagueCreateRoute
@@ -216,7 +195,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LeagueRoute: LeagueRoute,
   SignInRoute: SignInRoute,
   LeagueLeagueIdRoute: LeagueLeagueIdRoute,
   LeagueCreateRoute: LeagueCreateRoute,
@@ -236,7 +214,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/league",
         "/signIn",
         "/league_/$leagueId",
         "/league_/create",
@@ -247,9 +224,6 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/league": {
-      "filePath": "league.tsx"
     },
     "/signIn": {
       "filePath": "signIn.tsx"

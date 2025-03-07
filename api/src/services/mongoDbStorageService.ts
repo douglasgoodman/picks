@@ -12,12 +12,11 @@ export async function putSeasonDocument(season: SeasonDocument): Promise<void> {
             .updateOne(
                 { year: season.year },
                 { $set: season },
-                { upsert: true }
+                { upsert: true },
             );
-        console.log('result:', JSON.stringify(result));
     } catch (error) {
         console.error(
-            `Error updating season in MongoDB: ${JSON.stringify(error)}`
+            `Error updating season in MongoDB: ${JSON.stringify(error)}`,
         );
         throw error;
     }

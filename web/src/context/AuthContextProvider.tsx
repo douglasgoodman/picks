@@ -1,8 +1,9 @@
 import { type PropsWithChildren } from 'react';
-import { AuthContext, AuthContextType } from './AuthContext';
+import { AuthContext, AuthContextType, AuthenticatedUser } from './AuthContext';
 import { useAsync, useAsyncCallback } from 'react-async-hook';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { api } from '../api/api';
+import { LoadingOverlay } from '../components/LoadingOverlay';
 
 export const AuthContextProvider: React.FC<PropsWithChildren> = ({
     children,
@@ -40,13 +41,16 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
         signOutCallback.loading;
 
     const context: AuthContextType = {
+        isAuthenticated: !!userFetchCallback.result,
         inProgress,
-        user: userFetchCallback.result,
+        user: userFetchCallback.result ?? ({} as AuthenticatedUser),
         signIn: signInCallback.execute,
         signOut: signOutCallback.execute,
     };
 
     return (
-        <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
+        <AuthContext value={context}>
+            <LoadingOverlay isLoading={inProgress}>{children}</LoadingOverlay>
+        </AuthContext>
     );
 };

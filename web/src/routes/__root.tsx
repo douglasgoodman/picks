@@ -1,8 +1,13 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { App } from '../App';
+import { NoMatch } from '../pages/NoMatch';
 
-export const Route = createRootRoute({
+interface RouterContext {
+    isAuthenticated: boolean;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
     component: () => (
         <>
             <App>
@@ -11,4 +16,5 @@ export const Route = createRootRoute({
             <TanStackRouterDevtools />
         </>
     ),
+    notFoundComponent: NoMatch,
 });

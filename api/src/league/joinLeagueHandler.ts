@@ -32,7 +32,7 @@ export const joinLeagueHandler: RequestHandler<
         return;
     }
 
-    if (doc.member_ids.length >= doc.max_teams) {
+    if (doc.member_ids.length >= doc.configuration.max_teams) {
         res.status(400);
         res.send({ message: 'League is full' });
         return;

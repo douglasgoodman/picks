@@ -32,10 +32,6 @@ export const authCompleteHandler: RequestHandler = async (req, res) => {
     const oauthClient = googleOAuth.createClient();
 
     const { tokens } = await oauthClient.getToken(code);
-    console.log(JSON.stringify(tokens));
-    if (!tokens.access_token) {
-        console.log('no access token!!');
-    }
 
     const oauth2 = google.oauth2('v2');
     const { data: userInfo } = await oauth2.userinfo.get({
