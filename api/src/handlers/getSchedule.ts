@@ -20,8 +20,9 @@ const scoreboardUrl =
     'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
 
 const mgmOddsProviderId = 47;
+const workingEspnOddsProvider = 58;
 const getOddsUrl = (eventId: string) =>
-    `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${eventId}/competitions/${eventId}/odds/${mgmOddsProviderId}`;
+    `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${eventId}/competitions/${eventId}/odds/${workingEspnOddsProvider}`;
 
 interface EventStatus {
     type: {
@@ -64,6 +65,7 @@ interface Scoreboard {
         id: string;
         date: string;
         competitions: {
+            type: { id: string; abbreviation: string };
             competitors: Competitor[];
             status: EventStatus;
         }[];
@@ -84,29 +86,39 @@ interface RawOdds {
 }
 
 export async function getScheduleAsSeasonDocument(): Promise<SeasonDocument> {
+    console.log('Start by getting the entire scoreboard');
     const { data: scoreboard } = await Axios.get<Scoreboard>(scoreboardUrl);
     callCount++;
 
+    console.log('Now get the preseason weeks');
     const preseasonWeeks = await convertCalendarToWeeks(
         scoreboard.leagues[0].calendar.find(
-            (c) => c.value === CalendarType.Preseason
-        )!
+            (c) => c.value === CalendarType.Preseason,
+        )!,
     );
+
+    console.log('Now get the regular season weeks');
     const regularSeasonWeeks = await convertCalendarToWeeks(
         scoreboard.leagues[0].calendar.find(
-            (c) => c.value === CalendarType.RegularSeason
-        )!
+            (c) => c.value === CalendarType.RegularSeason,
+        )!,
     );
+
+    console.log('Now get the postseason weeks');
     const postseasonWeeks = await convertCalendarToWeeks(
         scoreboard.leagues[0].calendar.find(
-            (c) => c.value === CalendarType.Postseason
-        )!
+            (c) => c.value === CalendarType.Postseason,
+        )!,
     );
+
+    console.log('Done!');
 
     const season: SeasonDocument = {
         is_current: true,
         year: scoreboard.season.year,
         weeks: [...preseasonWeeks, ...regularSeasonWeeks, ...postseasonWeeks],
+        start_date: new Date(scoreboard.leagues[0].season.startDate),
+        end_date: new Date(scoreboard.leagues[0].season.endDate),
     };
 
     return season;
@@ -116,25 +128,23 @@ async function convertCalendarToWeeks(calendar: Calendar): Promise<Week[]> {
     const weeks: Week[] = [];
     for (const week of calendar.entries) {
         const { data: weekScoreboard } = await Axios.get<Scoreboard>(
-            `${scoreboardUrl}?seasontype=${calendar.value}&week=${week.value}`
+            `${scoreboardUrl}?seasontype=${calendar.value}&week=${week.value}`,
         );
         callCount++;
 
-        const now = new Date();
-        const getOdds =
-            now > new Date(week.startDate) && now < new Date(week.endDate);
-        if (getOdds) {
-            console.log("It's Wednesday, my dudes! Updating odds...");
-        }
+        const getOdds = true;
 
         const games: Game[] = [];
 
         for (const event of weekScoreboard.events) {
+            if (event.competitions[0].type.id !== '1') {
+                continue;
+            }
             const homeCompetitor = event.competitions[0].competitors.find(
-                (c) => c.homeAway === 'home'
+                (c) => c.homeAway === 'home',
             )!;
             const awayCompetitor = event.competitions[0].competitors.find(
-                (c) => c.homeAway === 'away'
+                (c) => c.homeAway === 'away',
             )!;
 
             let odds: Odds | undefined;
@@ -162,7 +172,7 @@ async function convertCalendarToWeeks(calendar: Calendar): Promise<Week[]> {
                 id: event.id,
                 date_time: new Date(event.date),
                 status: convertEventStatusToGameStatus(
-                    event.competitions[0].status
+                    event.competitions[0].status,
                 ),
                 away: convertCompetitorToTeam(awayCompetitor),
                 home: convertCompetitorToTeam(homeCompetitor),
@@ -174,10 +184,14 @@ async function convertCalendarToWeeks(calendar: Calendar): Promise<Week[]> {
 
         weeks.push({
             number: week.value,
+            label: week.label,
+            detail: week.detail,
             is_preseason: calendar.value === CalendarType.Preseason,
             is_regular_season: calendar.value === CalendarType.RegularSeason,
             is_postseason: calendar.value === CalendarType.Postseason,
             games,
+            start_date: new Date(week.startDate),
+            end_date: new Date(week.endDate),
         });
     }
 

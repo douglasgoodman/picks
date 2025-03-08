@@ -17,7 +17,15 @@ export const JoinLeagueWithId: React.FC = () => {
 
     return (
         <Container sx={{ padding: '5rem' }} component={Paper}>
-            <Box component="form" display="flex" justifyContent="center">
+            <Box
+                component="form"
+                display="flex"
+                justifyContent="center"
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    joinLeague.join();
+                }}
+            >
                 <Stack spacing={2}>
                     <Typography variant="h5">
                         <Box sx={{ textAlign: 'center' }}>
@@ -25,9 +33,9 @@ export const JoinLeagueWithId: React.FC = () => {
                         </Box>
                     </Typography>
                     <Button
+                        type="submit"
                         loading={joinLeague.loading}
                         variant="contained"
-                        onClick={joinLeague.join}
                     >
                         Join
                     </Button>

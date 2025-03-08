@@ -1,19 +1,13 @@
-import { SeasonDocument, UserDocument, LeagueDocument } from '@picks/types';
-import { config } from '../config.js';
-import { Filter, MongoClient, ServerApiVersion } from 'mongodb';
+import { SeasonDocument } from '@picks/types';
 import { getScheduleAsSeasonDocument } from '../handlers/getSchedule.js';
+import { insertScheduleDocument } from './storage/schedule.js';
 
 export async function getSeasonDocument(): Promise<SeasonDocument> {
     try {
-        return await getScheduleAsSeasonDocument();
+        const season = await getScheduleAsSeasonDocument();
 
-        // await client.connect();
-        // const result = await client
-        //     .db('globaldata')
-        //     .collection<SeasonDocument>('seasons')
-        //     .findOne({ year: 2023 });
-        // console.log('result:', JSON.stringify(result));
-        // return result as SeasonDocument;
+        await insertScheduleDocument(season);
+        return season;
     } catch (error) {
         console.error(
             `Error getting season document from ESPN: ${JSON.stringify(error)}`,

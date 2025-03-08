@@ -38,7 +38,14 @@ export const CreateTeam: React.FC<Props> = ({
     });
 
     return (
-        <Container component="form" maxWidth="sm">
+        <Container
+            component="form"
+            maxWidth="sm"
+            onSubmit={(event) => {
+                event.preventDefault();
+                createTeamCallback.execute(userId, leagueId, teamName!);
+            }}
+        >
             <Stack spacing={2}>
                 <Typography variant="h5">
                     <Box sx={{ textAlign: 'center' }}>
@@ -56,12 +63,10 @@ export const CreateTeam: React.FC<Props> = ({
                     required
                 />
                 <Button
+                    type="submit"
                     loading={createTeamCallback.loading}
                     variant="contained"
                     disabled={!teamName}
-                    onClick={() =>
-                        createTeamCallback.execute(userId, leagueId, teamName!)
-                    }
                 >
                     Create
                 </Button>

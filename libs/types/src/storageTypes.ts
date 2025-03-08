@@ -5,14 +5,20 @@ export interface SeasonDocument {
     year: number;
     is_current: boolean;
     weeks: Week[];
+    start_date: Date;
+    end_date: Date;
 }
 
 export interface Week {
     number: string;
+    label: string;
+    detail: string;
     is_preseason: boolean;
     is_regular_season: boolean;
     is_postseason: boolean;
     games: Game[];
+    start_date: Date;
+    end_date: Date;
 }
 
 export type GameStatus = 'future' | 'inProgress' | 'complete';

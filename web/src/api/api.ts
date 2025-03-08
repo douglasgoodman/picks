@@ -8,6 +8,7 @@ import {
     GetLeagueResponse,
     GetMyLeaguesResponse,
     GetOddsProvidersResponse,
+    GetScheduleResponse,
     LeagueCreateRequest,
     LeagueCreateResponse,
     LeagueJoinRequest,
@@ -45,10 +46,10 @@ export const api = {
         },
     },
     league: {
-        get: async (id: string) => {
+        get: async (id: string, nameOnly?: boolean) => {
             const response = await axiosInstance.get<GetLeagueResponse>(
                 LeagueRoute.get,
-                { params: { id } },
+                { params: { id, nameOnly } },
             );
             return response.data;
         },
@@ -62,6 +63,8 @@ export const api = {
             name: string,
             maxTeams: number,
             noveltyTeams: string[],
+            preseason: boolean,
+            postseason: boolean,
             oddsProviderId?: string,
         ) => {
             const response = await axiosInstance.post<
@@ -72,6 +75,8 @@ export const api = {
                 maxTeams,
                 noveltyTeams,
                 oddsProviderId,
+                preseason,
+                postseason,
             });
             return response.data;
         },
@@ -96,6 +101,13 @@ export const api = {
         getOddsProviders: async () => {
             const response = await axiosInstance.get<GetOddsProvidersResponse>(
                 EspnRoute.getOddsProviders,
+            );
+            return response.data;
+        },
+        getSchedule: async (leagueId: string, year?: number) => {
+            const response = await axiosInstance.get<GetScheduleResponse>(
+                EspnRoute.getSchedule,
+                { params: { leagueId, year } },
             );
             return response.data;
         },

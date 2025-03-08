@@ -31,6 +31,8 @@ export interface LeagueConfigurationDto {
     maxTeams: number;
     noveltyTeams: NoveltyTeam[];
     oddsProvider?: OddsProvider;
+    preseason: boolean;
+    postseason: boolean;
 }
 
 export interface LeagueDto {
@@ -40,6 +42,11 @@ export interface LeagueDto {
     admins: MemberDto[];
     teams: TeamDto[];
     configuration: LeagueConfigurationDto;
+}
+
+export interface GetLeagueRequestQueryParams {
+    id?: string;
+    nameOnly?: boolean;
 }
 
 export interface GetLeagueResponse {
@@ -55,6 +62,8 @@ export interface LeagueCreateRequest {
     maxTeams: number;
     oddsProviderId?: string | undefined;
     noveltyTeams: string[];
+    preseason: boolean;
+    postseason: boolean;
 }
 
 export interface LeagueCreateResponse {

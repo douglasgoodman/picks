@@ -2,6 +2,7 @@ import {
     LeagueCreateResponse,
     LeagueCreateRequest,
     LeagueDto,
+    NoveltyTeam,
 } from '@picks/api-sdk';
 import { RequestHandler } from 'express';
 import {
@@ -41,22 +42,39 @@ export const createLeagueHandler: RequestHandler<
         name = uniqueNamesGenerator(nameGeneratorConfig).toLowerCase();
     } while ((await doesLeagueExist(name)).exists);
 
+    const league = req.body;
     const document: LeagueDocument = {
         _id: name,
         creator_id: req.session.user.id,
-        name: req.body.name,
+        name: league.name,
         member_ids: [req.session.user.id],
         admin_ids: [req.session.user.id],
         teams: [],
         configuration: {
-            max_teams: req.body.maxTeams,
-            novelty_teams: req.body.noveltyTeams,
+            max_teams: league.maxTeams,
+            novelty_teams: league.noveltyTeams,
+            preseason: league.preseason,
+            postseason: league.postseason,
         },
     };
 
-    if (req.body.oddsProviderId) {
+    if (league.noveltyTeams.includes(NoveltyTeam.Favorite)) {
+        document.teams.push({
+            user_id: NoveltyTeam.Favorite,
+            name: 'I always pick favorites',
+        });
+    }
+
+    if (league.noveltyTeams.includes(NoveltyTeam.Random)) {
+        document.teams.push({
+            user_id: NoveltyTeam.Random,
+            name: 'I pick randomly',
+        });
+    }
+
+    if (league.oddsProviderId) {
         const oddsProvider = await getOddsProviderDocument(
-            req.body.oddsProviderId,
+            league.oddsProviderId,
         );
         document.configuration.odds_provider = {
             id: oddsProvider._id,
@@ -66,5 +84,5 @@ export const createLeagueHandler: RequestHandler<
 
     await putLeagueDocument(document);
     const createResponse: LeagueCreateResponse = { id: name };
-    res.status(200).send(createResponse);
+    res.send(createResponse);
 };

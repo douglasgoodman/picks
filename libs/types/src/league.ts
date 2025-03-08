@@ -12,5 +12,7 @@ export interface LeagueDocument {
             id: string;
             name: string;
         };
+        preseason: boolean;
+        postseason: boolean;
     };
 }

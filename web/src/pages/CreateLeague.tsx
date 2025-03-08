@@ -6,17 +6,10 @@ import InputLabel from '@mui/material/InputLabel';
 import { useAsync, useAsyncCallback } from 'react-async-hook';
 import { environment } from '../environment';
 import Alert from '@mui/material/Alert';
-import FilledInput from '@mui/material/FilledInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import CheckIcon from '@mui/icons-material/Check';
-import { toCanvas } from 'qrcode';
 import Box from '@mui/material/Box';
 import { useTitle } from '../hooks/useTitle';
 import Button from '@mui/material/Button';
-import React, { useEffect, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { api } from '../api/api';
 import Slider from '@mui/material/Slider';
 import Paper from '@mui/material/Paper';
@@ -24,8 +17,9 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { NoveltyTeam } from '@picks/api-sdk';
-import { Link } from '@tanstack/react-router';
 import Autocomplete from '@mui/material/Autocomplete';
+import { LeagueLink } from '../components/LeagueLink';
+import Divider from '@mui/material/Divider';
 
 const maxTeamsPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -38,8 +32,8 @@ export const CreateLeague: React.FC = () => {
     const [includeFavoritesTeam, setIncludeFavoritesTeam] = useState(true);
     const [includeRandomTeam, setIncludeRandomTeam] = useState(true);
     const [leagueUrl, setLeagueUrl] = useState<string>();
-    const [copied, setCopied] = useState(false);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [includePreseason, setIncludePreseason] = useState(false);
+    const [includePostseason, setIncludePostseason] = useState(false);
 
     const getOddsProvidersCallback = useAsync(api.espn.getOddsProviders, []);
 
@@ -48,13 +42,6 @@ export const CreateLeague: React.FC = () => {
             setLeagueUrl(`${environment.webDomain}/league/${response.id}/join`);
         },
     });
-
-    useEffect(() => {
-        if (!(canvasRef.current && leagueUrl)) {
-            return;
-        }
-        toCanvas(canvasRef.current, leagueUrl, { width: 280 });
-    }, [canvasRef, leagueUrl]);
 
     const handleCreateButtonClick = async () => {
         const noveltyTeams = [];
@@ -69,85 +56,43 @@ export const CreateLeague: React.FC = () => {
             leagueName!,
             maxTeams,
             noveltyTeams,
+            includePreseason,
+            includePostseason,
             isAts && oddsProviderId ? oddsProviderId : undefined,
         );
     };
 
-    const handleCopyToClipboard = () => {
-        if (!leagueUrl) {
-            return;
-        }
-        navigator.clipboard.writeText(leagueUrl);
-        setCopied(true);
-    };
-
-    const selectedOddsProvider = React.useMemo(() => {
+    const selectedOddsProvider = useMemo(() => {
         const selected = getOddsProvidersCallback.result?.oddsProviders.find(
             (p) => p.id === oddsProviderId,
         );
         return { label: selected?.name ?? null, id: selected?.id ?? null };
     }, [getOddsProvidersCallback.result?.oddsProviders, oddsProviderId]);
 
-    if (createLeagueCallback.result && leagueUrl) {
-        return (
-            <Container sx={{ padding: '3rem' }} component={Paper}>
-                <Container component="form" maxWidth="sm">
-                    <Stack spacing={2} textAlign="center">
-                        <Typography variant="h5">League created!</Typography>
-                        <Link
-                            to="/league/$leagueId"
-                            params={{
-                                leagueId: createLeagueCallback.result.id,
-                            }}
-                        >
-                            Go there now
-                        </Link>
-                        <Typography component="div">
-                            This link will allow new members to join your team!
-                        </Typography>
-                        <FilledInput
-                            hiddenLabel
-                            defaultValue={leagueUrl}
-                            title={leagueUrl}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <Tooltip
-                                        title={
-                                            copied
-                                                ? 'Copied!'
-                                                : 'Copy link to clipboard'
-                                        }
-                                    >
-                                        <IconButton
-                                            onClick={handleCopyToClipboard}
-                                        >
-                                            {copied ? (
-                                                <CheckIcon />
-                                            ) : (
-                                                <ContentCopyIcon />
-                                            )}
-                                        </IconButton>
-                                    </Tooltip>
-                                </InputAdornment>
-                            }
-                        />
-                        <Box sx={{ textAlign: 'center' }}>
-                            <canvas width={280} height={280} ref={canvasRef} />
-                        </Box>
-                    </Stack>
-                </Container>
-            </Container>
-        );
-    }
-
     const isLoading =
         getOddsProvidersCallback.status === 'not-requested' ||
         getOddsProvidersCallback.loading ||
         createLeagueCallback.loading;
 
+    if (createLeagueCallback.result && leagueUrl) {
+        return (
+            <LeagueLink
+                leagueId={createLeagueCallback.result.id}
+                leagueUrl={leagueUrl}
+            />
+        );
+    }
+
     return (
         <Container sx={{ padding: '5rem' }} component={Paper}>
-            <Container component="form" maxWidth="sm">
+            <Container
+                component="form"
+                maxWidth="sm"
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    handleCreateButtonClick();
+                }}
+            >
                 <Stack spacing={2}>
                     <Typography variant="h5">
                         <Box sx={{ textAlign: 'center' }}>
@@ -166,6 +111,7 @@ export const CreateLeague: React.FC = () => {
                         disabled={isLoading}
                         required
                     />
+                    <Divider />
                     <FormGroup>
                         <FormControlLabel
                             control={
@@ -194,6 +140,7 @@ export const CreateLeague: React.FC = () => {
                             label="Add a team picks randomly"
                         />
                     </FormGroup>
+                    <Divider />
                     <Box>
                         <InputLabel>Max number of teams</InputLabel>
                         <Slider
@@ -214,6 +161,7 @@ export const CreateLeague: React.FC = () => {
                             }
                         />
                     </Box>
+                    <Divider />
                     <FormGroup>
                         <FormControlLabel
                             control={
@@ -244,11 +192,39 @@ export const CreateLeague: React.FC = () => {
                             getOptionLabel={(option) => option.label ?? ''}
                         />
                     )}
+                    <Divider />
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includePreseason}
+                                    onChange={(e) =>
+                                        setIncludePreseason(e.target.checked)
+                                    }
+                                />
+                            }
+                            label="Include preseason games"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includePostseason}
+                                    onChange={(e) =>
+                                        setIncludePostseason(e.target.checked)
+                                    }
+                                />
+                            }
+                            label="Include postseason games"
+                        />
+                    </FormGroup>
+                    <Divider />
                     <Button
+                        type="submit"
                         loading={isLoading}
                         variant="contained"
                         disabled={!leagueName || (isAts && !oddsProviderId)}
-                        onClick={handleCreateButtonClick}
                     >
                         Create
                     </Button>

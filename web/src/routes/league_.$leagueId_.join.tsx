@@ -17,7 +17,7 @@ export const Route = createFileRoute('/league_/$leagueId_/join')({
 function JoinLeagueComponent() {
     const { leagueId } = Route.useParams();
     return (
-        <LeagueContextProvider leagueId={leagueId}>
+        <LeagueContextProvider leagueId={leagueId} getNameOnly>
             <JoinLeagueWithId />
         </LeagueContextProvider>
     );
