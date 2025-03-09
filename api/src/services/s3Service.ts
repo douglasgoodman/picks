@@ -7,7 +7,7 @@ import {
 import { UserRoute } from '@picks/api-sdk';
 import axios from 'axios';
 import { Readable } from 'node:stream';
-import { config } from '../config';
+import { config } from '../config.js';
 
 const userImageBucket = 'pickem-user-images';
 
@@ -15,7 +15,7 @@ const getKey = (id: string) => `userimage/${id}`;
 
 export async function uploadUserImage(
     id: string,
-    imageUrl: string
+    imageUrl: string,
 ): Promise<string | undefined> {
     const client = new S3Client({ region: config.aws.region });
 
@@ -30,7 +30,7 @@ export async function uploadUserImage(
             Body: response.data,
         });
         await client.send(command);
-        return `https://${config.apiDomain}${UserRoute.image}`;
+        return `https://${config.apiDomain}${UserRoute.image}?id=${id}`;
     } catch (e) {
         console.error(e);
         return undefined;

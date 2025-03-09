@@ -1,204 +1,240 @@
-import React from 'react';
-import { FlexFill } from '../components/FlexFill';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { LoadingOverlay } from '../components/LoadingOverlay';
-import { useAuthContext } from '../context/AuthContext';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import { useAsyncCallback } from 'react-async-hook';
-import LoadingButton from '@mui/lab/LoadingButton';
-import axios from 'axios';
+import { useAsync, useAsyncCallback } from 'react-async-hook';
 import { environment } from '../environment';
 import Alert from '@mui/material/Alert';
-import FormHelperText from '@mui/material/FormHelperText';
-import FilledInput from '@mui/material/FilledInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import CheckIcon from '@mui/icons-material/Check';
-import { toCanvas } from 'qrcode';
 import Box from '@mui/material/Box';
-import { LeagueRoute } from '@picks/api-sdk';
 import { useTitle } from '../hooks/useTitle';
+import Button from '@mui/material/Button';
+import { useMemo, useState } from 'react';
+import { api } from '../api/api';
+import Slider from '@mui/material/Slider';
+import Paper from '@mui/material/Paper';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import { NoveltyTeam } from '@picks/api-sdk';
+import Autocomplete from '@mui/material/Autocomplete';
+import { LeagueLink } from '../components/LeagueLink';
+import Divider from '@mui/material/Divider';
 
-export interface LeagueProps {
-    join?: boolean;
-    create?: boolean;
-}
-
-const maxPlayerPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const axiosInstance = axios.create({
-    withCredentials: true,
-    baseURL: environment.apiDomain,
-});
+const maxTeamsPossibleValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export const CreateLeague: React.FC = () => {
     useTitle('Create a league');
-    const { user, inProgress: authInProgress } = useAuthContext();
-    const [leagueName, setLeagueName] = React.useState<string | undefined>(
-        undefined
-    );
-    const [maxPlayers, setMaxPlayers] = React.useState<number>(5);
-    const [leagueUrl, setLeagueUrl] = React.useState<string | undefined>(
-        undefined
-    );
-    const [copied, setCopied] = React.useState(false);
-    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const [leagueName, setLeagueName] = useState<string>();
+    const [isAts, setIsAts] = useState(false);
+    const [oddsProviderId, setOddsProviderId] = useState<string | null>(null);
+    const [maxTeams, setMaxTeams] = useState<number>(4);
+    const [includeFavoritesTeam, setIncludeFavoritesTeam] = useState(true);
+    const [includeRandomTeam, setIncludeRandomTeam] = useState(true);
+    const [leagueUrl, setLeagueUrl] = useState<string>();
+    const [includePreseason, setIncludePreseason] = useState(false);
+    const [includePostseason, setIncludePostseason] = useState(false);
 
-    const {
-        loading,
-        execute: createLeague,
-        error,
-    } = useAsyncCallback(async () => {
-        const response = await axiosInstance.post(LeagueRoute.create, {
-            leagueName,
-            maxPlayers,
-        });
-        setLeagueUrl(
-            `${environment.webDomain}${LeagueRoute.join}/${response.data.id}`
-        );
+    const getOddsProvidersCallback = useAsync(api.espn.getOddsProviders, []);
+
+    const createLeagueCallback = useAsyncCallback(api.league.create, {
+        onSuccess: (response) => {
+            setLeagueUrl(`${environment.webDomain}/league/${response.id}/join`);
+        },
     });
 
-    React.useEffect(() => {
-        if (!(canvasRef.current && leagueUrl)) {
-            return;
-        }
-        toCanvas(canvasRef.current, leagueUrl, { width: 280 });
-    }, [canvasRef, leagueUrl]);
-
     const handleCreateButtonClick = async () => {
-        await createLeague();
-    };
-
-    const handleCopyToClipboard = () => {
-        if (!leagueUrl) {
-            return;
+        const noveltyTeams = [];
+        if (includeFavoritesTeam) {
+            noveltyTeams.push(NoveltyTeam.Favorite);
         }
-        navigator.clipboard.writeText(leagueUrl);
-        setCopied(true);
+        if (includeRandomTeam) {
+            noveltyTeams.push(NoveltyTeam.Random);
+        }
+
+        await createLeagueCallback.execute(
+            leagueName!,
+            maxTeams,
+            noveltyTeams,
+            includePreseason,
+            includePostseason,
+            isAts && oddsProviderId ? oddsProviderId : undefined,
+        );
     };
 
-    if (!!leagueUrl) {
+    const selectedOddsProvider = useMemo(() => {
+        const selected = getOddsProvidersCallback.result?.oddsProviders.find(
+            (p) => p.id === oddsProviderId,
+        );
+        return { label: selected?.name ?? null, id: selected?.id ?? null };
+    }, [getOddsProvidersCallback.result?.oddsProviders, oddsProviderId]);
+
+    const isLoading =
+        getOddsProvidersCallback.status === 'not-requested' ||
+        getOddsProvidersCallback.loading ||
+        createLeagueCallback.loading;
+
+    if (createLeagueCallback.result && leagueUrl) {
         return (
-            <Container sx={{ padding: '2rem' }}>
-                <Container component="form" maxWidth="sm">
-                    <Stack spacing={2}>
-                        <Typography variant="h5">
-                            <Box sx={{ textAlign: 'center' }}>
-                                League created!
-                            </Box>
-                        </Typography>
-                        <Typography component="div">
-                            <Box sx={{ textAlign: 'center' }}>
-                                This link will allow new members to join your
-                                team!
-                            </Box>
-                        </Typography>
-                        <FilledInput
-                            hiddenLabel
-                            defaultValue={leagueUrl}
-                            title={leagueUrl}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <Tooltip
-                                        title={
-                                            copied
-                                                ? 'Copied!'
-                                                : 'Copy link to clipboard'
-                                        }
-                                    >
-                                        <IconButton
-                                            onClick={handleCopyToClipboard}
-                                        >
-                                            {copied ? (
-                                                <CheckIcon />
-                                            ) : (
-                                                <ContentCopyIcon />
-                                            )}
-                                        </IconButton>
-                                    </Tooltip>
-                                </InputAdornment>
-                            }
-                        />
-                        <Box sx={{ textAlign: 'center' }}>
-                            <canvas width={280} height={280} ref={canvasRef} />
-                        </Box>
-                    </Stack>
-                </Container>
-            </Container>
+            <LeagueLink
+                leagueId={createLeagueCallback.result.id}
+                leagueUrl={leagueUrl}
+            />
         );
     }
 
     return (
-        <Container sx={{ padding: '2rem' }}>
-            <LoadingOverlay isLoading={!!authInProgress}>
-                {!!user ? (
-                    <Container component="form" maxWidth="sm">
-                        <Stack spacing={2}>
-                            <Typography variant="h5">
-                                <Box sx={{ textAlign: 'center' }}>
-                                    Let's create a new league!
-                                </Box>
-                            </Typography>
-                            <TextField
-                                variant="filled"
-                                value={leagueName || ''}
-                                onChange={({ target: { value } }) =>
-                                    setLeagueName(value)
-                                }
-                                error={leagueName === ''}
-                                label="League name"
-                                helperText="Required"
-                                disabled={loading}
-                                required
-                            />
-                            <FormControl variant="filled" required>
-                                <InputLabel id="max-players-label">
-                                    Max number of players
-                                </InputLabel>
-                                <Select<number>
-                                    disabled={loading}
-                                    labelId="max-players-label"
-                                    id="max-players"
-                                    value={maxPlayers}
-                                    onChange={({ target: { value } }) =>
-                                        setMaxPlayers(value as number)
+        <Container sx={{ padding: '5rem' }} component={Paper}>
+            <Container
+                component="form"
+                maxWidth="sm"
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    handleCreateButtonClick();
+                }}
+            >
+                <Stack spacing={2}>
+                    <Typography variant="h5">
+                        <Box sx={{ textAlign: 'center' }}>
+                            Let's create a new league!
+                        </Box>
+                    </Typography>
+                    <TextField
+                        variant="filled"
+                        value={leagueName || ''}
+                        onChange={({ target: { value } }) =>
+                            setLeagueName(value)
+                        }
+                        error={leagueName === ''}
+                        label="League name"
+                        helperText="Required"
+                        disabled={isLoading}
+                        required
+                    />
+                    <Divider />
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includeFavoritesTeam}
+                                    onChange={(e) =>
+                                        setIncludeFavoritesTeam(
+                                            e.target.checked,
+                                        )
                                     }
-                                >
-                                    {maxPlayerPossibleValues.map((value) => (
-                                        <MenuItem key={value} value={value}>
-                                            {value}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <FormHelperText>Required</FormHelperText>
-                            </FormControl>
-                            <LoadingButton
-                                loading={loading}
-                                variant="contained"
-                                disabled={!leagueName}
-                                onClick={handleCreateButtonClick}
-                            >
-                                Create
-                            </LoadingButton>
-                            {!!error && (
-                                <Alert severity="error">
-                                    We were unable to create a league!
-                                </Alert>
+                                />
+                            }
+                            label="Add a team that only picks favorites"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includeRandomTeam}
+                                    onChange={(e) =>
+                                        setIncludeRandomTeam(e.target.checked)
+                                    }
+                                />
+                            }
+                            label="Add a team picks randomly"
+                        />
+                    </FormGroup>
+                    <Divider />
+                    <Box>
+                        <InputLabel>Max number of teams</InputLabel>
+                        <Slider
+                            disabled={isLoading}
+                            id="max-teams"
+                            valueLabelDisplay="auto"
+                            marks={maxTeamsPossibleValues.map((n) => ({
+                                value: n,
+                                label: n,
+                            }))}
+                            step={1}
+                            min={1}
+                            max={10}
+                            defaultValue={4}
+                            value={maxTeams}
+                            onChange={(_, value) =>
+                                setMaxTeams(value as number)
+                            }
+                        />
+                    </Box>
+                    <Divider />
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={isAts}
+                                    onChange={(e) => setIsAts(e.target.checked)}
+                                />
+                            }
+                            label="Pick ATS"
+                        />
+                    </FormGroup>
+                    {isAts && getOddsProvidersCallback.result && (
+                        <Autocomplete
+                            value={selectedOddsProvider}
+                            onChange={(_, v) =>
+                                setOddsProviderId(v?.id ?? null)
+                            }
+                            options={getOddsProvidersCallback.result.oddsProviders.map(
+                                (p) => ({
+                                    label: p.name,
+                                    id: p.id,
+                                }),
                             )}
-                        </Stack>
-                    </Container>
-                ) : (
-                    <Typography>Sign in first</Typography>
-                )}
-                <Typography></Typography>
-            </LoadingOverlay>
+                            renderInput={(params) => (
+                                <TextField {...params} label="Odds provider" />
+                            )}
+                            getOptionLabel={(option) => option.label ?? ''}
+                        />
+                    )}
+                    <Divider />
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includePreseason}
+                                    onChange={(e) =>
+                                        setIncludePreseason(e.target.checked)
+                                    }
+                                />
+                            }
+                            label="Include preseason games"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    disabled={isLoading}
+                                    checked={includePostseason}
+                                    onChange={(e) =>
+                                        setIncludePostseason(e.target.checked)
+                                    }
+                                />
+                            }
+                            label="Include postseason games"
+                        />
+                    </FormGroup>
+                    <Divider />
+                    <Button
+                        type="submit"
+                        loading={isLoading}
+                        variant="contained"
+                        disabled={!leagueName || (isAts && !oddsProviderId)}
+                    >
+                        Create
+                    </Button>
+                    {createLeagueCallback.error && (
+                        <Alert severity="error">
+                            We were unable to create a league!
+                        </Alert>
+                    )}
+                </Stack>
+            </Container>
         </Container>
     );
 };

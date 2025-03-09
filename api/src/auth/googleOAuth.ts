@@ -1,7 +1,7 @@
 import { AuthRoute } from '@picks/api-sdk';
 import { Credentials, OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
-import { config } from '../config';
+import { config } from '../config.js';
 
 const authCompleteUri = `https://${config.apiDomain}${AuthRoute.complete}`;
 
@@ -26,7 +26,7 @@ const createClient = (refreshToken?: string): OAuth2Client => {
 const isTokenValid = async (
     client: OAuth2Client,
     idToken: string,
-    userId: string
+    userId: string,
 ): Promise<{ success: boolean }> => {
     try {
         const loginTicket = await client.verifyIdToken({
@@ -46,7 +46,7 @@ const isTokenValid = async (
 const generateAuthUrl = (
     client: OAuth2Client,
     nonce: string,
-    hint?: string
+    hint?: string,
 ): string =>
     client.generateAuthUrl({
         scope: scopes,
@@ -57,7 +57,7 @@ const generateAuthUrl = (
     });
 
 const refreshToken = async (
-    client: OAuth2Client
+    client: OAuth2Client,
 ): Promise<Credentials | undefined> => {
     try {
         const { credentials } = await client.refreshAccessToken();

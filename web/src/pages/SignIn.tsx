@@ -1,50 +1,37 @@
-import React from 'react';
 import Google from '@mui/icons-material/Google';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
 import { useAuthContext } from '../context/AuthContext';
-import { FlexFill } from '../components/FlexFill';
-import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import { useTitle } from '../hooks/useTitle';
+import Button from '@mui/material/Button';
+import { useSearch } from '@tanstack/react-router';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { LoadingOverlay } from '../components/LoadingOverlay';
 
 export const SignIn: React.FC = () => {
-    const { user, signIn } = useAuthContext();
-    const [inProgress, setInProgress] = React.useState(false);
-    const navigate = useNavigate();
+    const { signIn, inProgress } = useAuthContext();
+    const { path } = useSearch({ from: '/signIn' });
 
     useTitle('Sign in');
 
-    const handleSignInClick = () => {
-        setInProgress(true);
-        signIn();
-    };
-
-    if (!!user) {
-        navigate('/');
-    }
-
     return (
-        <Container>
-            <FlexFill
-                sx={{
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <Typography>
-                    Show me your Picks uses your Google account for sign in.
-                </Typography>
-                <LoadingButton
-                    loading={inProgress}
-                    variant="contained"
-                    startIcon={<Google />}
-                    onClick={handleSignInClick}
-                >
-                    Sign in with Google
-                </LoadingButton>
-            </FlexFill>
-        </Container>
+        <LoadingOverlay isLoading={!!inProgress}>
+            <Container sx={{ padding: '5rem' }} component={Paper}>
+                <Stack sx={{ alignItems: 'center' }} spacing={3}>
+                    <Typography>
+                        Show me your Picks uses your Google account for sign in.
+                    </Typography>
+                    <Button
+                        loading={inProgress}
+                        variant="contained"
+                        startIcon={<Google />}
+                        onClick={() => signIn(path)}
+                    >
+                        Sign in with Google
+                    </Button>
+                </Stack>
+            </Container>
+        </LoadingOverlay>
     );
 };

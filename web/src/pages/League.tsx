@@ -1,43 +1,29 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { FlexFill } from '../components/FlexFill';
 import Container from '@mui/material/Container';
-import { useAuthContext } from '../context/AuthContext';
-import { create } from 'domain';
-import Typography from '@mui/material/Typography';
 import { useTitle } from '../hooks/useTitle';
+import { useLeagueContext } from '../context/LeagueContext';
+import { useAuthContext } from '../context/AuthContext';
+import { CreateTeam } from '../components/CreateTeam';
+import { LeagueDashboard } from '../components/LeagueDashboard';
 
-export interface LeagueProps {
-    join?: boolean;
-    create?: boolean;
-}
+export const League: React.FC = () => {
+    const { league, refresh } = useLeagueContext();
+    const { user } = useAuthContext();
+    useTitle(league.name);
 
-export const League: React.FC<LeagueProps> = ({ join, create }) => {
-    const { id } = useParams<'id'>();
-    useTitle('League stuff');
-
-    if (create) {
+    if (
+        !league.teams.length ||
+        !league.teams.find((t) => t.userId === user.id)
+    ) {
         return (
             <Container sx={{ padding: '2rem' }}>
-                <FlexFill
-                    sx={{ flexDirection: 'column', alignItems: 'center' }}
-                >
-                    <Typography variant="h5">
-                        Let's create a new league!
-                    </Typography>
-                    <Typography></Typography>
-                </FlexFill>
+                <CreateTeam
+                    leagueId={league.id}
+                    userId={user.id}
+                    onSuccess={refresh}
+                />
             </Container>
         );
     }
-    if (join) {
-    }
-    if (join && !!id) {
-        return <Container></Container>;
-    }
-    return (
-        <Container>
-            <Typography variant="h5">League stuff!</Typography>
-        </Container>
-    );
+
+    return <LeagueDashboard />;
 };

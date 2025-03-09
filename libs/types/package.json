@@ -2,7 +2,8 @@
     "name": "@picks/types",
     "main": "dist/index.js",
     "devDependencies": {
-        "typescript": "^5.1.6"
+        "typescript": "^5.7.3",
+        "mongodb": "^6.13.0"
     },
     "scripts": {
         "build": "tsc",

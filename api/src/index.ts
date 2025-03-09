@@ -1,12 +1,15 @@
 import express from 'express';
 import session from 'cookie-session';
-import { addAuthRouter } from './auth/authRouter';
-import { getSeasonDocument } from './services/storageService';
-import { config } from './config';
-import { addUserRouter } from './user/userRouter';
+import { addAuthRouter } from './auth/authRouter.js';
+import { getSeasonDocument } from './services/storageService.js';
+import { config } from './config.js';
+import { addUserRouter } from './user/userRouter.js';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import { addLeagueRouter } from './league/leagueRouter';
+import { addLeagueRouter } from './league/leagueRouter.js';
+import { addTeamRouter } from './team/teamRouter.js';
+import { addEspnRouter } from './espn/espnRouter.js';
+import { addPicksRouter } from './picks/picksRouter.js';
 
 const app = express();
 app.set('trust proxy', true);
@@ -22,7 +25,7 @@ app.use(
     session({
         secret: config.session.secret,
         expires,
-    })
+    }),
 );
 
 app.get('/schedule', async (_req, res) => {
@@ -33,6 +36,9 @@ app.get('/schedule', async (_req, res) => {
 addAuthRouter(app);
 addUserRouter(app);
 addLeagueRouter(app);
+addTeamRouter(app);
+addEspnRouter(app);
+addPicksRouter(app);
 
 app.get('/hi', (_, res) => {
     res.send('hello!!');

@@ -1,68 +1,56 @@
-import React from 'react';
-import axios from 'axios';
-import { AuthContext, AuthContextType } from './AuthContext';
-import { HasChildren } from '../types';
-import { environment } from '../environment';
+import { type PropsWithChildren } from 'react';
+import { AuthContext, AuthContextType, AuthenticatedUser } from './AuthContext';
 import { useAsync, useAsyncCallback } from 'react-async-hook';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import {
-    AuthFetchResponse,
-    AuthRoute,
-    AuthStartResponse,
-} from '@picks/api-sdk';
+import { api } from '../api/api';
+import { LoadingOverlay } from '../components/LoadingOverlay';
 
-export type AuthContextProviderProps = HasChildren;
-
-const axiosInstance = axios.create({
-    withCredentials: true,
-    baseURL: environment.apiDomain,
-});
-
-export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({
+export const AuthContextProvider: React.FC<PropsWithChildren> = ({
     children,
 }) => {
     const localStorage = useLocalStorage();
-    const [user, setUser] = React.useState<AuthFetchResponse>();
 
-    const { loading: fetchInProgress } = useAsync(async () => {
-        const response = await axiosInstance.get<AuthFetchResponse>(
-            AuthRoute.fetch
-        );
-        const userResponse = response.data;
-        localStorage.set<string>('signInHint', userResponse.email);
-        setUser(userResponse);
-    }, []);
+    const userFetchCallback = useAsync(api.auth.fetch, [], {
+        onSuccess: (user) => {
+            localStorage.set<string>('signInHint', user.email);
+        },
+    });
 
-    const { loading: signInInProgress, execute: signIn } = useAsyncCallback(
+    const signInCallback = useAsyncCallback(
         async (path?: string) => {
             const hint = localStorage.get<string>('signInHint');
-            const response = await axiosInstance.get<AuthStartResponse>(
-                AuthRoute.start,
-                {
-                    params: { path, hint },
-                }
-            );
-            location.href = response.data.url;
-        }
+            return await api.auth.start(path, hint);
+        },
+        {
+            onSuccess: (response) => {
+                location.href = response.url;
+            },
+        },
     );
 
-    const { loading: signOutInProgress, execute: signOut } = useAsyncCallback(
-        async () => {
-            await axiosInstance.get(AuthRoute.signOut);
+    const signOutCallback = useAsyncCallback(api.auth.signOut, {
+        onSuccess: () => {
             location.href = '/';
-        }
-    );
+        },
+    });
 
-    const inProgress = fetchInProgress || signInInProgress || signOutInProgress;
+    const inProgress =
+        userFetchCallback.loading ||
+        userFetchCallback.status === 'not-requested' ||
+        signInCallback.loading ||
+        signOutCallback.loading;
 
     const context: AuthContextType = {
+        isAuthenticated: !!userFetchCallback.result,
         inProgress,
-        user,
-        signIn,
-        signOut,
+        user: userFetchCallback.result ?? ({} as AuthenticatedUser),
+        signIn: signInCallback.execute,
+        signOut: signOutCallback.execute,
     };
 
     return (
-        <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
+        <AuthContext value={context}>
+            <LoadingOverlay isLoading={inProgress}>{children}</LoadingOverlay>
+        </AuthContext>
     );
 };

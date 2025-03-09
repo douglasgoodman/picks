@@ -1,26 +1,21 @@
-import React from 'react';
-import { FlexFill } from '../components/FlexFill';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { useTitle } from '../hooks/useTitle';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { Link } from '@tanstack/react-router';
 
 export const NoMatch: React.FC = () => {
     useTitle('Page not found');
 
     return (
-        <Container>
-            <FlexFill
-                sx={{
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flex: 1,
-                }}
-            >
+        <Container sx={{ padding: '5rem' }} component={Paper}>
+            <Stack sx={{ alignItems: 'center' }} spacing={3}>
                 <Typography variant="h2">
                     I can't find that page anywhere!
                 </Typography>
-            </FlexFill>
+                <Link to="/">Go home</Link>
+            </Stack>
         </Container>
     );
 };

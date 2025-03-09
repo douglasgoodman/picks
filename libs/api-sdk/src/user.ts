@@ -1,3 +1,3 @@
 export const UserRoute = {
-    image: '/user/image',
+    image: '/user/image' as const,
 };

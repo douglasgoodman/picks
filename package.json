@@ -1,6 +1,7 @@
 {
     "name": "picks",
     "version": "1.0.0",
+    "private": true,
     "description": "",
     "author": "",
     "license": "ISC",
@@ -10,12 +11,11 @@
     },
     "workspaces": [
         "api",
-        "functions/*",
         "libs/*",
         "web"
     ],
     "devDependencies": {
-        "typescript": "^5.1.6"
+        "typescript": "^5.7.3"
     },
     "scripts": {
         "build": "npm run build --workspaces",

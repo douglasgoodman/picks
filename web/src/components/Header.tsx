@@ -1,5 +1,3 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import Brightness4 from '@mui/icons-material/Brightness4';
 import Brightness7 from '@mui/icons-material/Brightness7';
 import AppBar from '@mui/material/AppBar';
@@ -19,6 +17,8 @@ import thumbsUpImage from '../images/thumbsup.png';
 import cameraImage from '../images/camera.png';
 import { useIsMobileUi } from '../hooks/useIsMobileUi';
 import Stack from '@mui/material/Stack';
+import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
 
 export interface HeaderProps {
     paletteMode: PaletteMode;
@@ -30,8 +30,8 @@ export const Header: React.FC<HeaderProps> = ({
     togglePaletteMode,
 }) => {
     const { isMobileUi } = useIsMobileUi();
-    const { user, signOut, inProgress } = useAuthContext();
-    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+    const { isAuthenticated, user, signOut, inProgress } = useAuthContext();
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const open = Boolean(anchorEl);
 
     const imageSx = { height: '24px', width: '24px' };
@@ -54,12 +54,12 @@ export const Header: React.FC<HeaderProps> = ({
     };
 
     return (
-        <AppBar position="static">
+        <AppBar position="relative">
             <Toolbar sx={{ padding: '0' }}>
                 <Stack
                     direction="row"
                     alignItems="center"
-                    component={RouterLink}
+                    component={Link}
                     to="/"
                 >
                     <Box
@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
                         </Typography>
                     )}
                 </Box>
-                {!!user && (
+                {isAuthenticated && (
                     <>
                         <AvatarWithName
                             firstName={user.firstName}
@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </>
                 )}
                 {!inProgress && !user && (
-                    <Button color="inherit" component={RouterLink} to="/signin">
+                    <Button color="inherit" component={Link} to="/signin">
                         Sign in
                     </Button>
                 )}
