@@ -7,13 +7,13 @@ import {
     NoveltyTeam,
     TeamDto,
 } from '@picks/api-sdk';
+import { LeagueDocument } from '@picks/types';
 import { RequestHandler } from 'express';
 import {
     getLeagueDocument,
     getLeagueDocuments,
 } from '../services/storage/league.js';
 import { getUserDocuments } from '../services/storage/user.js';
-import { LeagueDocument, Team } from '@picks/types';
 
 const noveltyTeamIds = Object.values(NoveltyTeam) as string[];
 

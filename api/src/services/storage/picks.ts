@@ -1,4 +1,5 @@
 import { PickDocument } from '@picks/types';
+import { Filter, ObjectId, OptionalUnlessRequiredId } from 'mongodb';
 import {
     deleteDocument,
     getDocument,
@@ -6,7 +7,6 @@ import {
     insertDocument,
     putDocument,
 } from './mongoDb.js';
-import { Filter, ObjectId, OptionalUnlessRequiredId } from 'mongodb';
 
 const collectionName = 'picks';
 

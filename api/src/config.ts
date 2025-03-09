@@ -12,6 +12,10 @@ interface Config {
     session: {
         secret: string;
     };
+    mongodb: {
+        connectionString: string;
+        dbName: string;
+    };
 }
 
 export const config: Config = {
@@ -27,5 +31,9 @@ export const config: Config = {
     },
     session: {
         secret: process.env.SESSION_SECRET!,
+    },
+    mongodb: {
+        connectionString: process.env.MONGODB_CONNECTION_STRING!,
+        dbName: process.env.MONGODB_DB_NAME!,
     },
 };

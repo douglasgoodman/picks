@@ -3,12 +3,12 @@ import { RequestHandler } from 'express';
 import { google } from 'googleapis';
 import { config } from '../config.js';
 import { uploadUserImage } from '../services/s3Service.js';
-import { googleOAuth } from './googleOAuth.js';
 import { putUserDocument } from '../services/storage/user.js';
+import { googleOAuth } from './googleOAuth.js';
 
 export const authCompleteHandler: RequestHandler = async (req, res) => {
     const error = req.query.error;
-    if (!!error) {
+    if (error) {
         console.error(error);
     }
 
@@ -48,7 +48,7 @@ export const authCompleteHandler: RequestHandler = async (req, res) => {
 
     if (userInfo.picture) {
         const url = await uploadUserImage(userDocument._id, userInfo.picture);
-        if (!!url) {
+        if (url) {
             userDocument.user_image_url = url;
         }
     }

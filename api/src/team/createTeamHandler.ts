@@ -1,4 +1,4 @@
-import { TeamCreateResponse, TeamCreateRequest } from '@picks/api-sdk';
+import { TeamCreateRequest } from '@picks/api-sdk';
 import { RequestHandler } from 'express';
 import {
     addLeagueTeam,
@@ -7,7 +7,7 @@ import {
 
 export const createTeamHandler: RequestHandler<
     unknown,
-    TeamCreateResponse,
+    unknown,
     TeamCreateRequest,
     unknown
 > = async (req, res) => {

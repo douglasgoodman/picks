@@ -1,8 +1,7 @@
 import {
-    S3Client,
-    PutObjectCommand,
     GetObjectCommand,
-    GetObjectCommandOutput,
+    PutObjectCommand,
+    S3Client,
 } from '@aws-sdk/client-s3';
 import { UserRoute } from '@picks/api-sdk';
 import axios from 'axios';

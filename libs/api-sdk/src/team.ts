@@ -7,5 +7,3 @@ export interface TeamCreateRequest {
     leagueId: string;
     name: string;
 }
-
-export interface TeamCreateResponse {}

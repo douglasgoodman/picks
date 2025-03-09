@@ -1,8 +1,8 @@
+import { AuthRoute, AuthStartResponse } from '@picks/api-sdk';
 import { RequestHandler } from 'express';
 import { randomBytes } from 'node:crypto';
 import { config } from '../config.js';
 import { googleOAuth } from './googleOAuth.js';
-import { AuthRoute, AuthStartResponse } from '@picks/api-sdk';
 
 const authRedirectUrl = `https://${config.apiDomain}${AuthRoute.redirect}`;
 

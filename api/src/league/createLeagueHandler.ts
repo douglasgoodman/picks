@@ -1,24 +1,23 @@
 import {
-    LeagueCreateResponse,
     LeagueCreateRequest,
-    LeagueDto,
+    LeagueCreateResponse,
     NoveltyTeam,
 } from '@picks/api-sdk';
+import { LeagueDocument } from '@picks/types';
 import { RequestHandler } from 'express';
 import {
-    uniqueNamesGenerator,
+    adjectives,
+    animals,
+    colors,
     Config,
     names,
-    adjectives,
-    colors,
-    animals,
+    uniqueNamesGenerator,
 } from 'unique-names-generator';
 import {
     doesLeagueExist,
     putLeagueDocument,
 } from '../services/storage/league.js';
 import { getOddsProviderDocument } from '../services/storage/oddsProviders.js';
-import { LeagueDocument } from '@picks/types';
 
 const nameGeneratorConfig: Config = {
     dictionaries: [names, ['the'], adjectives, colors, animals],

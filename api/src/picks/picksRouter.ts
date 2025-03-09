@@ -1,9 +1,9 @@
-import { Express } from 'express';
 import { PicksRoute } from '@picks/api-sdk';
+import { Express } from 'express';
+import { createPickHandler } from './createPickHandler.js';
+import { deletePickHandler } from './deletePickHandler.js';
 import { getPicksHandler } from './getPicksHandler.js';
 import { updatePickHandler } from './updatePickHandler.js';
-import { deletePickHandler } from './deletePickHandler.js';
-import { createPickHandler } from './createPickHandler.js';
 
 export function addPicksRouter(app: Express) {
     app.post(PicksRoute.create, createPickHandler);

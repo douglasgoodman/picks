@@ -1,11 +1,11 @@
 import { UpdatePickRequest, UpdatePickResponse } from '@picks/api-sdk';
+import { PickDocument } from '@picks/types';
 import { RequestHandler } from 'express';
 import { getLeagueDocument } from '../services/storage/league.js';
 import {
     getPickDocument,
     updatePickDocument,
 } from '../services/storage/picks.js';
-import { PickDocument } from '@picks/types';
 
 export const updatePickHandler: RequestHandler<
     unknown,
@@ -49,7 +49,7 @@ export const updatePickHandler: RequestHandler<
 
     res.send({
         pick: {
-            id: updatedDocument._id.toString(),
+            id: updatedDocument._id!.toString(),
             leagueId: updatedDocument.league_id,
             teamId: updatedDocument.team_id,
             eventId: updatedDocument.event_id,

@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import {
     Game,
     GameStatus,
@@ -7,6 +6,7 @@ import {
     Team,
     Week,
 } from '@picks/types';
+import Axios from 'axios';
 
 export let callCount = 0;
 
@@ -19,7 +19,7 @@ enum CalendarType {
 const scoreboardUrl =
     'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
 
-const mgmOddsProviderId = 47;
+//const mgmOddsProviderId = 47;
 const workingEspnOddsProvider = 58;
 const getOddsUrl = (eventId: string) =>
     `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${eventId}/competitions/${eventId}/odds/${workingEspnOddsProvider}`;
@@ -164,7 +164,7 @@ async function convertCalendarToWeeks(calendar: Calendar): Promise<Week[]> {
                             : rawOdds.spread * -1,
                     };
                 } catch (e) {
-                    console.log('error getting odds for', event.id);
+                    console.log('error getting odds for ', event.id, e);
                 }
             }
 

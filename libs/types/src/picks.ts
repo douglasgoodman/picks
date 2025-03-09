@@ -1,4 +1,4 @@
-import { ObjectId, Document } from 'mongodb';
+import { Document, ObjectId } from 'mongodb';
 
 export interface PickDocument extends Document {
     _id?: ObjectId;

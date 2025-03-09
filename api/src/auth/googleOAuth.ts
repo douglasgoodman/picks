@@ -17,7 +17,7 @@ const createClient = (refreshToken?: string): OAuth2Client => {
         clientSecret,
         redirectUri: authCompleteUri,
     });
-    if (!!refreshToken) {
+    if (refreshToken) {
         oauth2Client.setCredentials({ refresh_token: refreshToken });
     }
     return oauth2Client;
@@ -62,7 +62,7 @@ const refreshToken = async (
     try {
         const { credentials } = await client.refreshAccessToken();
         return credentials;
-    } catch (e) {
+    } catch {
         return undefined;
     }
 };

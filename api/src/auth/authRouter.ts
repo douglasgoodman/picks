@@ -1,9 +1,9 @@
-import { Express } from 'express';
 import { AuthRoute } from '@picks/api-sdk';
-import { authFetchHandler } from './authFetchHandler.js';
-import { authStartHandler } from './authStartHandler.js';
-import { authRedirectHandler } from './authRedirectHandler.js';
+import { Express } from 'express';
 import { authCompleteHandler } from './authCompleteHandler.js';
+import { authFetchHandler } from './authFetchHandler.js';
+import { authRedirectHandler } from './authRedirectHandler.js';
+import { authStartHandler } from './authStartHandler.js';
 import { signOutHandler } from './signOutHandler.js';
 
 export function addAuthRouter(app: Express) {

@@ -1,15 +1,15 @@
-import express from 'express';
-import session from 'cookie-session';
-import { addAuthRouter } from './auth/authRouter.js';
-import { getSeasonDocument } from './services/storageService.js';
-import { config } from './config.js';
-import { addUserRouter } from './user/userRouter.js';
-import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import { addLeagueRouter } from './league/leagueRouter.js';
-import { addTeamRouter } from './team/teamRouter.js';
+import session from 'cookie-session';
+import express from 'express';
+import morgan from 'morgan';
+import { addAuthRouter } from './auth/authRouter.js';
+import { config } from './config.js';
 import { addEspnRouter } from './espn/espnRouter.js';
+import { addLeagueRouter } from './league/leagueRouter.js';
 import { addPicksRouter } from './picks/picksRouter.js';
+import { getSeasonDocument } from './services/storageService.js';
+import { addTeamRouter } from './team/teamRouter.js';
+import { addUserRouter } from './user/userRouter.js';
 
 const app = express();
 app.set('trust proxy', true);

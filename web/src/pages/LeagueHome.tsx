@@ -1,22 +1,23 @@
-import Container from '@mui/material/Container';
-import { useTitle } from '../hooks/useTitle';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { useLeaguesContext } from '../context/LeaguesContext';
-import Table from '@mui/material/Table';
-import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
-import TableHead from '@mui/material/TableHead';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
-import TableBody from '@mui/material/TableBody';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Button from '@mui/material/Button';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import Avatar from '@mui/material/Avatar';
-import { getAvatarInitials } from '../components/getAvatarInitials';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { getAvatarInitials } from '../components/getAvatarInitials';
+import { useLeaguesContext } from '../context/LeaguesContext';
+import { useTitle } from '../hooks/useTitle';
 
 export const LeagueHome: React.FC = () => {
     useTitle('My Leagues');
@@ -28,7 +29,9 @@ export const LeagueHome: React.FC = () => {
         <Container sx={{ padding: '2rem' }} component={Paper}>
             <Stack spacing={2}>
                 <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="h4">My leagues</Typography>
+                    <Breadcrumbs>
+                        <Typography>My Leagues</Typography>
+                    </Breadcrumbs>
                     <ButtonGroup>
                         <Button component={Link} to="/league/create">
                             Create a league

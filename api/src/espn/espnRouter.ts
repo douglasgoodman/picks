@@ -1,5 +1,5 @@
-import { Express } from 'express';
 import { EspnRoute } from '@picks/api-sdk';
+import { Express } from 'express';
 import { getOddsProvidersHandler } from './getOddsProvidersHandler.js';
 import { getScheduleHandler } from './getScheduleHandler.js';
 

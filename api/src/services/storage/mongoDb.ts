@@ -1,14 +1,12 @@
 import {
     Document,
     MongoClient,
-    ObjectId,
     OptionalUnlessRequiredId,
     ServerApiVersion,
     UpdateFilter,
     type Filter,
 } from 'mongodb';
-
-const dbName = 'picks-test';
+import { config } from '../../config.js';
 
 const client = new MongoClient(process.env.MONGODB_CONNECTION_STRING!, {
     serverApi: {
@@ -25,7 +23,7 @@ export async function doesDocumentExist<T extends Document>(
     try {
         await client.connect();
         const result = await client
-            .db(dbName)
+            .db(config.mongodb.dbName)
             .collection<T>(collection)
             .countDocuments(filter, { limit: 1 });
         return { exists: result > 0 };
@@ -44,7 +42,7 @@ export async function getDocument<T extends Document>(
     try {
         await client.connect();
         const result = await client
-            .db(dbName)
+            .db(config.mongodb.dbName)
             .collection<T>(collection)
             .findOne(filter);
         return result as T;
@@ -62,7 +60,10 @@ export async function getMultipleDocuments<T extends Document>(
 ): Promise<T[]> {
     try {
         await client.connect();
-        const cursor = client.db(dbName).collection<T>(collection).find(filter);
+        const cursor = client
+            .db(config.mongodb.dbName)
+            .collection<T>(collection)
+            .find(filter);
         const result = await cursor.toArray();
         return result as T[];
     } catch (error) {
@@ -80,7 +81,7 @@ export async function insertDocument<T extends Document>(
     try {
         await client.connect();
         await client
-            .db(dbName)
+            .db(config.mongodb.dbName)
             .collection<T>(collection)
             .insertOne(document, { forceServerObjectId: true });
     } catch (error) {
@@ -97,7 +98,10 @@ export async function insertMultipleDocuments<T extends Document>(
 ): Promise<void> {
     try {
         await client.connect();
-        await client.db(dbName).collection<T>(collection).insertMany(documents);
+        await client
+            .db(config.mongodb.dbName)
+            .collection<T>(collection)
+            .insertMany(documents);
     } catch (error) {
         console.error(
             `Error updating document in MongoDB: ${JSON.stringify(error)}`,
@@ -112,8 +116,8 @@ export async function putDocument<T extends Document>(
 ): Promise<void> {
     try {
         await client.connect();
-        const result = await client
-            .db(dbName)
+        await client
+            .db(config.mongodb.dbName)
             .collection<T>(collection)
             .updateOne(
                 { _id: document._id },
@@ -135,8 +139,8 @@ export async function updateDocument<T extends Document>(
 ): Promise<void> {
     try {
         await client.connect();
-        const result = await client
-            .db(dbName)
+        await client
+            .db(config.mongodb.dbName)
             .collection<T>(collection)
             .updateOne(filter, update);
     } catch (error) {
@@ -152,9 +156,11 @@ export async function deleteDocument<T extends Document>(
     filter: Filter<T>,
 ): Promise<void> {
     try {
-        console.log('got here');
         await client.connect();
-        await client.db(dbName).collection<T>(collection).deleteOne(filter);
+        await client
+            .db(config.mongodb.dbName)
+            .collection<T>(collection)
+            .deleteOne(filter);
     } catch (error) {
         console.error(
             `Error deleting document in MongoDB: ${JSON.stringify(error)}`,

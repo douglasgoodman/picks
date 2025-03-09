@@ -73,5 +73,3 @@ export interface LeagueCreateResponse {
 export interface LeagueJoinRequest {
     id: string;
 }
-
-export interface LeagueJoinResponse {}

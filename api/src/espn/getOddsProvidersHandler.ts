@@ -1,11 +1,11 @@
 import { GetOddsProvidersResponse, OddsProviderDto } from '@picks/api-sdk';
+import { OddsProviderDocument } from '@picks/types';
 import { RequestHandler } from 'express';
+import { api } from '../services/espn/index.js';
 import {
     getOddsProviderDocuments,
     insertOddsProviderDocuments,
 } from '../services/storage/oddsProviders.js';
-import { api } from '../services/espn/index.js';
-import { OddsProviderDocument } from '@picks/types';
 
 export const getOddsProvidersHandler: RequestHandler<
     unknown,

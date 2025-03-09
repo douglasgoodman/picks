@@ -1,4 +1,4 @@
-import { LeagueJoinRequest, LeagueJoinResponse } from '@picks/api-sdk';
+import { LeagueJoinRequest } from '@picks/api-sdk';
 import { RequestHandler } from 'express';
 import {
     addLeagueMember,
@@ -7,7 +7,7 @@ import {
 
 export const joinLeagueHandler: RequestHandler<
     unknown,
-    LeagueJoinResponse,
+    unknown,
     LeagueJoinRequest,
     unknown
 > = async (req, res) => {
