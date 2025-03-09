@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import { addLeagueRouter } from './league/leagueRouter.js';
 import { addTeamRouter } from './team/teamRouter.js';
 import { addEspnRouter } from './espn/espnRouter.js';
+import { addPicksRouter } from './picks/picksRouter.js';
 
 const app = express();
 app.set('trust proxy', true);
@@ -37,6 +38,7 @@ addUserRouter(app);
 addLeagueRouter(app);
 addTeamRouter(app);
 addEspnRouter(app);
+addPicksRouter(app);
 
 app.get('/hi', (_, res) => {
     res.send('hello!!');

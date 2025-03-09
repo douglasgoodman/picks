@@ -68,6 +68,10 @@ export const WeekTable: React.FC<Props> = ({ week }) => {
                                         leagueId={league.id}
                                         teamId={team.userId}
                                         eventId={game.id}
+                                        home={game.home.abbreviation}
+                                        away={game.away.abbreviation}
+                                        homeSpread={game.odds?.home_spread}
+                                        awaySpread={game.odds?.away_spread}
                                     />
                                 </TableCell>
                             ))}

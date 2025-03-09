@@ -1,8 +1,12 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, Document } from 'mongodb';
 
-export interface PicksDocument {
-    _id: ObjectId;
-    leagueId: string;
-    teamId: string;
-    eventId: string;
+export interface PickDocument extends Document {
+    _id?: ObjectId;
+    league_id: string;
+    team_id: string;
+    event_id: string;
+    winner: string;
+    spread?: number;
+    funny_name?: string;
+    locked: boolean;
 }

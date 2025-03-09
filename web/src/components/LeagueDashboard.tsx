@@ -8,6 +8,7 @@ import { Link } from '@tanstack/react-router';
 import Tooltip from '@mui/material/Tooltip';
 import { ScheduleView } from './ScheduleView';
 import { ScheduleContextProvider } from '../context/ScheduleContextProvider';
+import { PicksContextProvider } from '../context/PicksContextProvider';
 
 export const LeagueDashboard: React.FC = () => {
     const { league } = useLeagueContext();
@@ -27,7 +28,9 @@ export const LeagueDashboard: React.FC = () => {
                     </Tooltip>
                 </Stack>
                 <ScheduleContextProvider leagueId={league.id}>
-                    <ScheduleView />
+                    <PicksContextProvider leagueId={league.id}>
+                        <ScheduleView />
+                    </PicksContextProvider>
                 </ScheduleContextProvider>
             </Stack>
         </Container>

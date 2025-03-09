@@ -11,7 +11,8 @@ export const joinLeagueHandler: RequestHandler<
     LeagueJoinRequest,
     unknown
 > = async (req, res) => {
-    if (!req.session?.user?.id) {
+    const userId = req.session?.user?.id;
+    if (!userId) {
         res.sendStatus(401);
         return;
     }
@@ -27,7 +28,7 @@ export const joinLeagueHandler: RequestHandler<
         return;
     }
 
-    if (doc.member_ids.includes(req.session.user.id)) {
+    if (doc.member_ids.includes(userId)) {
         res.sendStatus(409);
         return;
     }
@@ -38,7 +39,7 @@ export const joinLeagueHandler: RequestHandler<
         return;
     }
 
-    await addLeagueMember(req.body.id, req.session.user.id);
+    await addLeagueMember(req.body.id, userId);
 
     res.sendStatus(200);
 };

@@ -1,6 +1,7 @@
 import {
     Document,
     MongoClient,
+    ObjectId,
     OptionalUnlessRequiredId,
     ServerApiVersion,
     UpdateFilter,
@@ -141,6 +142,22 @@ export async function updateDocument<T extends Document>(
     } catch (error) {
         console.error(
             `Error updating document in MongoDB: ${JSON.stringify(error)}`,
+        );
+        throw error;
+    }
+}
+
+export async function deleteDocument<T extends Document>(
+    collection: string,
+    filter: Filter<T>,
+): Promise<void> {
+    try {
+        console.log('got here');
+        await client.connect();
+        await client.db(dbName).collection<T>(collection).deleteOne(filter);
+    } catch (error) {
+        console.error(
+            `Error deleting document in MongoDB: ${JSON.stringify(error)}`,
         );
         throw error;
     }
